@@ -2,6 +2,7 @@ package auth
 
 import (
 	"testing"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
