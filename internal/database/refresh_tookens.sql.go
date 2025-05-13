@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -15,30 +16,41 @@ const createRefreshToken = `-- name: CreateRefreshToken :exec
 INSERT INTO refresh_tokens (token, created_at, updated_at, user_id, expires_at)
 VALUES (
     $1,
-    NOW(),
-    NOW(),
     $2,
-    NOW() + INTERVAL '60 days'
+    $3,
+    $4,
+    $5
 )
 RETURNING token, created_at, updated_at, user_id, expires_at, revoked_at
 `
 
 type CreateRefreshTokenParams struct {
-	Token  string
-	UserID uuid.UUID
+	Token     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    uuid.UUID
+	ExpiresAt time.Time
 }
 
+// #nosec G101 -- token is dynamic and not a hardcoded credential
 func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) error {
-	_, err := q.db.ExecContext(ctx, createRefreshToken, arg.Token, arg.UserID)
+	_, err := q.db.ExecContext(ctx, createRefreshToken,
+		arg.Token,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.UserID,
+		arg.ExpiresAt,
+	)
 	return err
 }
 
 const getUserFromRefreshToken = `-- name: GetUserFromRefreshToken :one
-SELECT users.id, users.created_at, users.updated_at, users.email, users.hashed_password, users.steam_id FROM users
+SELECT users.id, users.created_at, users.updated_at, users.username, users.hashed_password, users.steam_id FROM users
 JOIN refresh_tokens ON users.id = refresh_tokens.user_id
 WHERE token = $1 AND revoked_at IS NULL AND expires_at > NOW()
 `
 
+// #nosec G101 -- false positive, token is a SQL placeholder
 func (q *Queries) GetUserFromRefreshToken(ctx context.Context, token string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserFromRefreshToken, token)
 	var i User
@@ -46,7 +58,7 @@ func (q *Queries) GetUserFromRefreshToken(ctx context.Context, token string) (Us
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Email,
+		&i.Username,
 		&i.HashedPassword,
 		&i.SteamID,
 	)
@@ -59,6 +71,7 @@ SET revoked_at = NOW(), updated_at = NOW()
 WHERE token = $1
 `
 
+// #nosec G101 -- false positive, token is just used in SQL update
 func (q *Queries) RevokeRefreshToken(ctx context.Context, token string) error {
 	_, err := q.db.ExecContext(ctx, revokeRefreshToken, token)
 	return err
