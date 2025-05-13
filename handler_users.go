@@ -14,13 +14,13 @@ type User struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	Email     string    `json:"email"`
-	SteamID   string    `json:"is_chirpy_red"`
+	Username  string    `json:"username"`
+	SteamID   string    `json:"steam_id"`
 }
 
 func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request) {
 	type parameters struct {
-		Email    string `json:"email"`
+		Username string `json:"username"`
 		SteamID  string `json:"steam_id"`
 		Password string `json:"password"`
 	}
@@ -46,7 +46,7 @@ func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request
 		ID:             uuid.New(),
 		CreatedAt:      time.Now().UTC(),
 		UpdatedAt:      time.Now().UTC(),
-		Email:          params.Email,
+		Username:       params.Username,
 		HashedPassword: hashedPassword,
 		SteamID:        params.SteamID,
 	})
@@ -55,7 +55,7 @@ func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	user, err := cfg.db.GetUserByEmail(req.Context(), params.Email)
+	user, err := cfg.db.GetUserByUsername(req.Context(), params.Username)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't get user", err)
 		return
@@ -66,7 +66,7 @@ func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request
 			ID:        user.ID,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
-			Email:     user.Email,
+			Username:  user.Username,
 			SteamID:   user.SteamID,
 		},
 	})
@@ -74,7 +74,7 @@ func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request
 
 func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, req *http.Request) {
 	type parameters struct {
-		Email    string `json:"email"`
+		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 	type response struct {
@@ -91,9 +91,9 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user, err := cfg.db.GetUserByEmail(req.Context(), params.Email)
+	user, err := cfg.db.GetUserByUsername(req.Context(), params.Username)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "The email provided does not exist", err)
+		respondWithError(w, http.StatusBadRequest, "The username provided does not exist", err)
 		return
 	}
 
@@ -116,8 +116,11 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, req *http.Request) {
 	}
 
 	err = cfg.db.CreateRefreshToken(req.Context(), database.CreateRefreshTokenParams{
-		Token:  refreshToken,
-		UserID: user.ID,
+		Token:     refreshToken,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		UserID:    user.ID,
+		ExpiresAt: time.Now().Add((15 * 24) * time.Hour),
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Could not set refresh token into database", err)
@@ -129,7 +132,7 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, req *http.Request) {
 			ID:        user.ID,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
-			Email:     user.Email,
+			Username:  user.Username,
 			SteamID:   user.SteamID,
 		},
 		Token:        accessToken,

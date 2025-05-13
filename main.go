@@ -88,7 +88,8 @@ func main() {
 
 	if apiCfg.db != nil {
 		v1Router.Post("/users", apiCfg.handlerUserCreate)
-		v1Router.Get("/users", apiCfg.handlerLogin)
+		v1Router.Post("/users/login", apiCfg.handlerLogin)
+		v1Router.Post("/users/delete", apiCfg.handlerDeleteAllUsers)
 	}
 
 	router.Mount("/v1", v1Router)
