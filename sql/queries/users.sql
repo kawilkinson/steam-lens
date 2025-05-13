@@ -1,5 +1,5 @@
 -- name: CreateUser :exec
-INSERT INTO users (id, created_at, updated_at, email, hashed_password, steam_id)
+INSERT INTO users (id, created_at, updated_at, username, hashed_password, steam_id)
 VALUES (
     $1,
     $2,
@@ -10,6 +10,10 @@ VALUES (
 );
 --
 
--- name: GetUserByEmail :one
-SELECT * FROM users WHERE email = $1;
+-- name: GetUserByUsername :one
+SELECT * FROM users WHERE username = $1;
+--
+
+-- name: DeleteUsers :exec
+DELETE FROM users;
 --
