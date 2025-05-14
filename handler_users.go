@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Khazz0r/steam-lens/internal/api"
 	"github.com/Khazz0r/steam-lens/internal/auth"
 	"github.com/Khazz0r/steam-lens/internal/database"
 	"github.com/google/uuid"
@@ -18,7 +19,7 @@ type User struct {
 	SteamID   string    `json:"steam_id"`
 }
 
-func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request) {
+func (cfg *config) handlerUserCreate(w http.ResponseWriter, req *http.Request) {
 	type parameters struct {
 		Username string `json:"username"`
 		SteamID  string `json:"steam_id"`
@@ -32,13 +33,13 @@ func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
 		return
 	}
 
 	hashedPassword, err := auth.HashPassword(params.Password)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error hashing password", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Error hashing password", err)
 		return
 	}
 
@@ -51,17 +52,17 @@ func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request
 		SteamID:        params.SteamID,
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't create user", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Couldn't create user", err)
 		return
 	}
 
 	user, err := cfg.db.GetUserByUsername(req.Context(), params.Username)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't get user", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Couldn't get user", err)
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, response{
+	api.RespondWithJSON(w, http.StatusCreated, response{
 		User: User{
 			ID:        user.ID,
 			CreatedAt: user.CreatedAt,
@@ -72,7 +73,7 @@ func (cfg *apiConfig) handlerUserCreate(w http.ResponseWriter, req *http.Request
 	})
 }
 
-func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, req *http.Request) {
+func (cfg *config) handlerLogin(w http.ResponseWriter, req *http.Request) {
 	type parameters struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -87,31 +88,31 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, req *http.Request) {
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error decoding request", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Error decoding request", err)
 		return
 	}
 
 	user, err := cfg.db.GetUserByUsername(req.Context(), params.Username)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "The username provided does not exist", err)
+		api.RespondWithError(w, http.StatusBadRequest, "The username provided does not exist", err)
 		return
 	}
 
 	err = auth.CheckPasswordHash(user.HashedPassword, params.Password)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Cannot login, wrong password provided", err)
+		api.RespondWithError(w, http.StatusUnauthorized, "Cannot login, wrong password provided", err)
 		return
 	}
 
 	accessToken, err := auth.MakeJWTToken(user.ID, cfg.jwtSecret, time.Hour)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Could not make JWT token", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Could not make JWT token", err)
 		return
 	}
 
 	refreshToken, err := auth.MakeRefreshToken()
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Could not make refresh token", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Could not make refresh token", err)
 		return
 	}
 
@@ -123,11 +124,11 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, req *http.Request) {
 		ExpiresAt: time.Now().Add((15 * 24) * time.Hour),
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Could not set refresh token into database", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "Could not set refresh token into database", err)
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, response{
+	api.RespondWithJSON(w, http.StatusOK, response{
 		User: User{
 			ID:        user.ID,
 			CreatedAt: user.CreatedAt,

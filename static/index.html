@@ -28,7 +28,7 @@
 
       const registerUser = async () => {
         try {
-          const res = await fetch('/v1/users', {
+          const res = await fetch('/v1/users/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(registerData),
