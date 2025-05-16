@@ -10,6 +10,7 @@ import (
 const steamMainAPIURL = "http://api.steampowered.com/"
 const steamUserURL = "ISteamUser/"
 const steamPlayerURL = "IPlayerService/"
+const steamAchievementURL = "ISteamUserStats/"
 
 type Player struct {
 	SteamID                  string `json:"steamid"`
@@ -29,7 +30,7 @@ type SummariesResponse struct {
 }
 
 // Make API call to Steam's GetPlayerSummaries endpoint to obtain player data for all steam IDs provided
-func (apicfg *ApiConfig) GetPlayerSummaries(steamids []string) (Summaries, error) {
+func (apicfg *ApiConfig) GetPlayerSummaries(steamIDs []string) (Summaries, error) {
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
 		return Summaries{}, err
@@ -39,7 +40,7 @@ func (apicfg *ApiConfig) GetPlayerSummaries(steamids []string) (Summaries, error
 
 	query := url.Values{}
 	query.Set("key", apicfg.SteamApiKey)
-	query.Set("steamids", strings.Join(steamids, ","))
+	query.Set("steamids", strings.Join(steamIDs, ","))
 
 	fullURL.RawQuery = query.Encode()
 
@@ -77,7 +78,7 @@ type OwnedGamesResponse struct {
 }
 
 // Make API call to Steam's GetOwnedGames endpoint to obtain all owned games for a user
-func (apicfg *ApiConfig) GetOwnedGames(steamid string) (OwnedGames, error) {
+func (apicfg *ApiConfig) GetOwnedGames(steamID string) (OwnedGames, error) {
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
 		return OwnedGames{}, err
@@ -87,7 +88,7 @@ func (apicfg *ApiConfig) GetOwnedGames(steamid string) (OwnedGames, error) {
 
 	query := url.Values{}
 	query.Set("key", apicfg.SteamApiKey)
-	query.Set("steamid", steamid)
+	query.Set("steamid", steamID)
 	query.Set("include_appinfo", "true")
 
 	fullURL.RawQuery = query.Encode()
@@ -106,7 +107,7 @@ func (apicfg *ApiConfig) GetOwnedGames(steamid string) (OwnedGames, error) {
 		return OwnedGames{}, err
 	}
 
-	body.Response.SteamID = steamid
+	body.Response.SteamID = steamID
 
 	return body.Response, nil
 }
@@ -122,11 +123,11 @@ type FriendList struct {
 }
 
 type FriendListResponse struct {
-	FriendsList FriendList `json:"friendslist"`
+	Friendlist FriendList `json:"friendslist"`
 }
 
 // Make API call to Steam's GetFriendList endpoint to obtain all friends for a user
-func (apicfg *ApiConfig) GetFriendList(steamid string) (FriendList, error) {
+func (apicfg *ApiConfig) GetFriendList(steamID string) (FriendList, error) {
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
 		return FriendList{}, err
@@ -136,7 +137,7 @@ func (apicfg *ApiConfig) GetFriendList(steamid string) (FriendList, error) {
 
 	query := url.Values{}
 	query.Set("key", apicfg.SteamApiKey)
-	query.Set("steamid", steamid)
+	query.Set("steamid", steamID)
 	query.Set("relationship", "friend")
 
 	fullURL.RawQuery = query.Encode()
@@ -155,5 +156,52 @@ func (apicfg *ApiConfig) GetFriendList(steamid string) (FriendList, error) {
 		return FriendList{}, err
 	}
 
-	return body.FriendsList, nil
+	return body.Friendlist, nil
+}
+
+type Achievement struct {
+	ApiName    string `json:"apiname"`
+	Achieved   bool   `json:"achieved"`
+	UnlockTime string `json:"unlocktime"`
+}
+
+type PlayerAchievements struct {
+	Achievements []Achievement `json:"achievements"`
+}
+
+type PlayerAchievementsResponse struct {
+	PlayerAchievements PlayerAchievements
+}
+
+// Make API call to Steam's GetPlayerAchievements endpoint to obtain all achievements for a game
+func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appid string) (PlayerAchievements, error) {
+	baseURL, err := url.Parse(steamMainAPIURL)
+	if err != nil {
+		return PlayerAchievements{}, err
+	}
+
+	fullURL := baseURL.JoinPath(steamAchievementURL, "GetPlayerAchievements", "v0001/")
+
+	query := url.Values{}
+	query.Set("key", apicfg.SteamApiKey)
+	query.Set("steamid", steamID)
+	query.Set("appid", appid)
+
+	fullURL.RawQuery = query.Encode()
+
+	resp, err := http.Get(fullURL.String())
+	if err != nil {
+		return PlayerAchievements{}, err
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	body := PlayerAchievementsResponse{}
+	err = decoder.Decode(&body)
+	if err != nil {
+		return PlayerAchievements{}, err
+	}
+
+	return body.PlayerAchievements, nil
 }
