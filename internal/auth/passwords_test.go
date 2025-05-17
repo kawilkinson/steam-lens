@@ -23,7 +23,6 @@ func TestHashPasswordAndPlainText(t *testing.T) {
 func TestTwoHashedPasswords(t *testing.T) {
 	testPassword := "Goodbye"
 
-	// hash both passwords
 	hashedPassword1, err := bcrypt.GenerateFromPassword([]byte(testPassword), bcrypt.DefaultCost)
 	if err != nil {
 		t.Errorf("Error happened with generating first hash from password: %v", err)
@@ -33,7 +32,6 @@ func TestTwoHashedPasswords(t *testing.T) {
 		t.Errorf("Error happened with generating second password from password: %v", err)
 	}
 
-	// compare hash and password to ensure they match
 	if err := bcrypt.CompareHashAndPassword(hashedPassword1, []byte(testPassword)); err != nil {
 		t.Errorf("Password did not match hashedPassword1: %v", err)
 	}

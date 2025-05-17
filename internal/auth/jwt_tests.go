@@ -10,7 +10,6 @@ import (
 )
 
 func TestMakeAndValidateJWT(t *testing.T) {
-	// make token
 	expiresIn, err := time.ParseDuration("1m")
 	if err != nil {
 		t.Error("Failed to create time.Duration")
@@ -31,7 +30,6 @@ func TestMakeAndValidateJWT(t *testing.T) {
 		t.Errorf("Error signing token: %v", err)
 	}
 
-	// validate token made above
 	claims := &jwt.RegisteredClaims{}
 
 	jwtTokenToCheck, err := jwt.ParseWithClaims(signedToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -50,7 +48,6 @@ func TestMakeAndValidateJWT(t *testing.T) {
 }
 
 func TestExpiredJWTTokens(t *testing.T) {
-	// make token
 	expiresIn, err := time.ParseDuration("1ms")
 	if err != nil {
 		t.Error("Failed to create time.Duration")
@@ -74,7 +71,6 @@ func TestExpiredJWTTokens(t *testing.T) {
 	// intentionally wait 50ms so that token expires
 	time.Sleep(time.Millisecond * 50)
 
-	// validate token made above
 	claims := &jwt.RegisteredClaims{}
 
 	jwtTokenToCheck, err := jwt.ParseWithClaims(signedToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -93,7 +89,6 @@ func TestExpiredJWTTokens(t *testing.T) {
 }
 
 func TestWrongSecretJWTTokens(t *testing.T) {
-	// make token
 	expiresIn, err := time.ParseDuration("5s")
 	if err != nil {
 		t.Error("Failed to create time.Duration")
@@ -108,14 +103,12 @@ func TestWrongSecretJWTTokens(t *testing.T) {
 		Subject:   userID.String(),
 	})
 
-	// true secret
 	tokenSecret := "testy"
 	_, err = jwtToken.SignedString([]byte(tokenSecret))
 	if err != nil {
 		t.Errorf("Error signing token: %v", err)
 	}
 
-	// validate token made above
 	claims := &jwt.RegisteredClaims{}
 
 	// intentionally put in wrong secret to parse with
