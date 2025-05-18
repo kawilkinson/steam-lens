@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 
+	"github.com/Khazz0r/steam-lens/internal/api"
 	"github.com/Khazz0r/steam-lens/internal/database"
 	_ "github.com/lib/pq"
 )
@@ -21,6 +22,7 @@ type config struct {
 	db        *database.Queries
 	platform  string
 	jwtSecret string
+	steamAPI  *api.ApiConfig
 }
 
 //go:embed static/*
@@ -35,6 +37,7 @@ func run() error {
 	dbURL := getEnvOrFail("DATABASE_URL")
 	port := getEnvOrFail("PORT")
 	jwtSecret := getEnvOrFail("JWTSECRET")
+	steamAPIKey := getEnvOrFail("STEAM_API_KEY")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -45,6 +48,7 @@ func run() error {
 		db:        database.New(db),
 		platform:  platform,
 		jwtSecret: jwtSecret,
+		steamAPI:  &api.ApiConfig{SteamApiKey: steamAPIKey},
 	}
 
 	router := chi.NewRouter()
@@ -58,6 +62,7 @@ func run() error {
 
 	router.Get("/", serveIndex)
 	router.Mount("/v1", apiCfg.routesV1())
+	router.Mount("/api/steam", apiCfg.routesAPI())
 
 	server := &http.Server{
 		Addr:              ":" + port,

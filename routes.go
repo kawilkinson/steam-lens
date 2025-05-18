@@ -15,3 +15,14 @@ func (cfg *config) routesV1() http.Handler {
 
 	return router
 }
+
+func (cfg *config) routesAPI() http.Handler {
+	router := chi.NewRouter()
+
+	router.Get("/player-summaries", cfg.steamAPI.HandlerGetPlayerSummaries)
+	router.Get("/friends", cfg.steamAPI.HandlerGetFriendList)
+	router.Get("/games", cfg.steamAPI.HandlerGetOwnedGames)
+	router.Get("/achievements", cfg.steamAPI.HandlerGetPlayerAchievements)
+
+	return router
+}
