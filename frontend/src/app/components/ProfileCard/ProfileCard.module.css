@@ -1,0 +1,41 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	padding: 2px 15px;
+}
+
+.container:hover {
+	cursor: pointer;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	background-color: var(--accent-dark-rgb);
+}
+
+.profileSection {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.avatar {
+	margin: 10px 30px;
+}
+
+.personaname {
+	font-size: 1.5rem;
+}
+
+.error {
+	align-self: center;
+	color: red;
+}
+
+@media only screen and (max-width: 768px) {
+	.header {
+		flex-direction: column;
+	}
+
+}

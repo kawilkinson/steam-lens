@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 )
 
@@ -204,4 +205,51 @@ func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appid string) (PlayerAch
 	}
 
 	return body.PlayerAchievements, nil
+}
+
+type ComparedMatchedGames struct {
+	UserID           string  `json:"userID"`
+	UserPercentage   float64 `json:"userPercentage"`
+	FriendID         string  `json:"friendID"`
+	FriendGamesCount int     `json:"friendGamesCount"`
+	FriendPercentage float64 `json:"friendPercentage"`
+	Matches          int     `json:"matches"`
+	MatchingGames    []Game  `json:"matchingGames"`
+	FriendOnlyGames  []Game  `json:"friendOnlyGames"`
+}
+
+// Run comparisons on user and their friend's games to get overall ranking
+func (userGames OwnedGames) CompareOwnedGames(friendGames OwnedGames, listGames bool) ComparedMatchedGames {
+	result := ComparedMatchedGames{
+		UserID:   userGames.SteamID,
+		FriendID: friendGames.SteamID,
+	}
+
+	result.MatchingGames = []Game{}
+	result.FriendOnlyGames = []Game{}
+
+	for _, game := range friendGames.Games {
+		if slices.Contains(userGames.Games, game) {
+			result.MatchingGames = append(result.MatchingGames, game)
+		} else {
+			result.FriendOnlyGames = append(result.FriendOnlyGames, game)
+		}
+	}
+	result.Matches = len(result.MatchingGames)
+
+	if userGames.GameCount > 0 {
+		result.UserPercentage = float64(result.Matches) / float64(userGames.GameCount)
+	}
+
+	result.FriendGamesCount = friendGames.GameCount
+	if friendGames.GameCount > 0 {
+		result.FriendPercentage = float64(result.Matches) / float64(friendGames.GameCount)
+	}
+
+	if !listGames {
+		result.MatchingGames = nil
+		result.FriendOnlyGames = nil
+	}
+
+	return result
 }
