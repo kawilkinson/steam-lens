@@ -89,3 +89,37 @@ func (apicfg *ApiConfig) HandlerGetPlayerAchievements(w http.ResponseWriter, req
 
 	RespondWithJSON(w, http.StatusOK, achievements)
 }
+
+func (apicfg *ApiConfig) HandlerCompareOwnedGames(w http.ResponseWriter, req *http.Request) {
+	userID := req.URL.Query().Get("userID")
+	friendID := req.URL.Query().Get("friendID")
+	if userID == "" {
+		RespondWithError(w, http.StatusBadRequest, "User Steam ID is required", nil)
+		return
+	}
+	if friendID == "" {
+		RespondWithError(w, http.StatusBadRequest, "Friend Steam ID is required", nil)
+	}
+
+	listGames := false
+	listGamesQuery := req.URL.Query().Get("listGames")
+	if listGamesQuery == "true" {
+		listGames = true
+	}
+
+	userGames, err := apicfg.GetOwnedGames(userID)
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetOwnedGames endpoint for user", err)
+		return
+	}
+
+	friendGames, err := apicfg.GetOwnedGames(friendID)
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetOwnedGames endpoint for friend", err)
+		return
+	}
+
+	result := userGames.CompareOwnedGames(friendGames, listGames)
+	
+	RespondWithJSON(w, http.StatusOK, result)
+}
