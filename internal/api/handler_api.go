@@ -120,6 +120,6 @@ func (apicfg *ApiConfig) HandlerCompareOwnedGames(w http.ResponseWriter, req *ht
 	}
 
 	result := userGames.CompareOwnedGames(friendGames, listGames)
-	
+
 	RespondWithJSON(w, http.StatusOK, result)
 }
