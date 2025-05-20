@@ -14,12 +14,12 @@ const steamPlayerURL = "IPlayerService/"
 const steamAchievementURL = "ISteamUserStats/"
 
 type Player struct {
-	SteamID                  string `json:"steamid"`
-	CommunityVisibilityState int    `json:"communityvisibilitystate"`
-	PersonaName              string `json:"personaname"`
+	SteamID                  string `json:"steamID"`
+	CommunityVisibilityState int    `json:"communityVisibilityState"`
+	PersonaName              string `json:"personaName"`
 	Avatar                   string `json:"avatar"`
-	AvatarMedium             string `json:"avatarmedium"`
-	AvatarFull               string `json:"avatarfull"`
+	AvatarMedium             string `json:"avatarMedium"`
+	AvatarFull               string `json:"avatarFull"`
 }
 
 type Summaries struct {
@@ -62,15 +62,16 @@ func (apicfg *ApiConfig) GetPlayerSummaries(steamIDs []string) (Summaries, error
 	return body.Response, nil
 }
 
+// For now, imgIconURL returns img_icon_url for json for since Steam's API uses snake case
 type Game struct {
-	APPID  int    `json:"appid"`
-	Name   string `json:"name"`
-	ImgURL string `json:"img_icon_url"`
+	AppID      int    `json:"appID"`
+	Name       string `json:"name"`
+	ImgIconURL string `json:"img_icon_url"`
 }
 
 type OwnedGames struct {
 	SteamID   string
-	GameCount int    `json:"game_count"`
+	GameCount int    `json:"gameCount"`
 	Games     []Game `json:"games"`
 }
 
@@ -114,9 +115,9 @@ func (apicfg *ApiConfig) GetOwnedGames(steamID string) (OwnedGames, error) {
 }
 
 type Friend struct {
-	SteamID      string `json:"steamid"`
+	SteamID      string `json:"steamID"`
 	Relationship string `json:"relationship"`
-	FriendSince  int    `json:"friend_since"`
+	FriendSince  int    `json:"friendSince"`
 }
 
 type FriendList struct {
@@ -161,9 +162,9 @@ func (apicfg *ApiConfig) GetFriendList(steamID string) (FriendList, error) {
 }
 
 type Achievement struct {
-	ApiName    string `json:"apiname"`
+	ApiName    string `json:"apiName"`
 	Achieved   bool   `json:"achieved"`
-	UnlockTime string `json:"unlocktime"`
+	UnlockTime string `json:"unlockTime"`
 }
 
 type PlayerAchievements struct {

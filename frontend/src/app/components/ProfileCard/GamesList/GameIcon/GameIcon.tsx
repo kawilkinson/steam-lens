@@ -16,8 +16,8 @@ export default function GameIcon({ game, width, height }: { game: Game, width: n
     failedLoad ?
       <Image
         className={styles.icon}
-        alt="Icon-round-Question mark"
-        src="/unknown_game.png"
+        alt="Icon-Question mark"
+        src="/no_game_icon.png"
         width={width} height={height}
         blurDataURL={blurDataURL}
         placeholder="blur" />
@@ -25,7 +25,7 @@ export default function GameIcon({ game, width, height }: { game: Game, width: n
       <Image
         className={styles.icon}
         loader={imageLoader}
-        src={`${game.appid}/${game.imgIconURL}.jpg`}
+        src={`${game.appID}/${game.img_icon_url}.jpg`}
         alt={"GameIcon"}
         width={width} height={height}
         blurDataURL={blurDataURL}

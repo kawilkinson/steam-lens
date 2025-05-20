@@ -48,10 +48,10 @@ export default function GamesList({ games, listType, setMatchingGamesDisplay, se
           return (
             <a
               className={`${styles.game} ${listType === "missing" ? styles.missingEntry : ""}`}
-              href={`https://store.steampowered.com/app/${game.appid}/`}
+              href={`https://store.steampowered.com/app/${game.appID}/`}
               target="_blank"
               rel="noopener"
-              key={game.appid}
+              key={game.appID}
               onClick={(ev) => { ev.stopPropagation() }}
             >
               <GameIcon game={game} width={iconWidth} height={iconHeight} />
