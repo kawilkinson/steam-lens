@@ -1,21 +1,25 @@
 export interface PlayerSummary {
-	steamid: string;
+	steamID: string;
 	personaName: string;
 	avatar: string;
 	avatarMedium: string;
 	avatarFull: string;
 }
 
+// img_icon_url isn't idomatic with its snake casing since currently the backend is serving json that way
 export interface Game {
-	appid: number;
+	appID: number;
 	name: string;
-	imgIconURL: string;
+	img_icon_url: string;
 }
 
 export interface MatchingGames {
-    matchingGames: Game[];
-    matches: number;
+	UserID: string;
+	UserPercentage: number;
     friendID: string;
+	friendGamesCount: number;
+	friendPercentage: number;
+	matches: number;
+	matchingGames: Game[];
     friendOnlyGames: Game[];
-    friendGamesCount: number;
 }

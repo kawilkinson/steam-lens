@@ -1,8 +1,11 @@
 package api
 
 import (
+	"cmp"
 	"net/http"
+	"slices"
 	"strings"
+	"sync"
 )
 
 type ApiConfig struct {
@@ -122,4 +125,71 @@ func (apicfg *ApiConfig) HandlerCompareOwnedGames(w http.ResponseWriter, req *ht
 	result := userGames.CompareOwnedGames(friendGames, listGames)
 
 	RespondWithJSON(w, http.StatusOK, result)
+}
+
+func (apicfg *ApiConfig) HandlerMatchedGamesRanking(w http.ResponseWriter, req *http.Request) {
+	steamid := req.URL.Query().Get("steamid")
+	if steamid == "" {
+		RespondWithError(w, http.StatusBadRequest, "'steamid' parameter is required for getting player info", nil)
+		return
+	}
+
+	listGames := false
+	listGamesQuery := req.URL.Query().Get("listGames")
+	if listGamesQuery == "true" {
+		listGames = true
+	}
+
+	ownedGames, err := apicfg.GetOwnedGames(steamid)
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetOwnedGames endpoint", err)
+		return
+	}
+
+	friendList, err := apicfg.GetFriendList(steamid)
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetFriendList endpoint", err)
+		return
+	}
+
+	waitgGroup := sync.WaitGroup{}
+	channel := make(chan ComparedMatchedGames, len(friendList.Friends))
+
+	for _, friend := range friendList.Friends {
+		waitgGroup.Add(1)
+
+		go func(friend Friend, channel chan ComparedMatchedGames) {
+			defer waitgGroup.Done()
+
+			friendGames, err := apicfg.GetOwnedGames(friend.SteamID)
+			if err != nil {
+				RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetOwnedGames endpoint for friend", err)
+				return
+			}
+
+			result := ownedGames.CompareOwnedGames(friendGames, listGames)
+
+			channel <- result
+		}(friend, channel)
+	}
+
+	waitgGroup.Wait()
+
+	results := []ComparedMatchedGames{}
+	for range len(friendList.Friends) {
+		result := <-channel
+		results = append(results, result)
+	}
+
+	slices.SortFunc(results, func(friend1 ComparedMatchedGames, friend2 ComparedMatchedGames) int {
+		return cmp.Compare(friend1.FriendPercentage, friend2.FriendPercentage)
+	})
+
+	resp := struct {
+		Ranking []ComparedMatchedGames `json:"ranking"`
+	}{
+		Ranking: results,
+	}
+
+	RespondWithJSON(w, http.StatusOK, resp)
 }

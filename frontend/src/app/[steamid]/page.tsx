@@ -5,9 +5,8 @@ import FriendsList from "../components/FriendsList/FriendsList";
 import { PlayerSummary } from "../definitions/types";
 import Link from "next/link";
 
-export default async function GamesPage(props: { params: { steamid: string } }) {
-  const { params } = await props;
-  const steamid = params.steamid;  
+export default async function GamesPage({ params }: { params: { steamid: string } }) {
+    const steamid = (await params).steamid;
 
     const resp = await getPlayerSummaries(steamid);
 
