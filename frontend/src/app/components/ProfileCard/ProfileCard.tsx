@@ -5,6 +5,7 @@ import { PlayerSummary, MatchingGames, Game } from "@/app/definitions/types";
 import styles from "./ProfileCard.module.css"
 import { MouseEvent, useState } from "react";
 import GamesList from "./GamesList/GamesList";
+import Rankings from "./Rankings/Rankings";
 
 export default function ProfileCard({ summary, games }: {
   summary: PlayerSummary,
@@ -39,7 +40,7 @@ export default function ProfileCard({ summary, games }: {
     }
   };
 
-  console.log("ProfileCard props", summary, games);
+  console.log("Games prop passed to Rankings:", games);
   return (
     <div className={styles.container} onClick={handleToggleExpand} style={{ cursor: "pointer" }}>
       <div className={styles.header}>
@@ -53,6 +54,11 @@ export default function ProfileCard({ summary, games }: {
           />
           <p className={styles.personaname}>{summary.personaName}</p>
         </div>
+
+          {games == null || games.friendGamesCount == 0 ? <></>
+          :
+          <Rankings rankings={games} />}
+
       </div>
       {expanded && games &&
         <GamesList

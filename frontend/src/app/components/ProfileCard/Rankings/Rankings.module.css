@@ -1,0 +1,53 @@
+.container {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.percentageOwned {
+  margin-right: 10px;
+}
+
+.percent {
+  color: green;
+}
+
+.rankText {
+  font-size: 1.5rem;
+  display: none;
+}
+
+.rankNumber {
+  font-size: 1.5rem; 
+  font-weight: 900;
+  color: inherit;
+  margin-left: 10px;
+  margin-right: 15px; 
+  line-height: 1;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+/* Responsive styles */
+@media only screen and (max-width: 768px) {
+  .container {
+    flex-direction: column-reverse;
+    align-items: center;
+    width: 100%;
+  }
+
+  .percentageOwned {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+
+  .rankNumber {
+    font-size: 2rem; 
+    margin: 10px 0;
+  }
+
+  .rankText {
+    display: inline;
+  }
+}
