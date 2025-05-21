@@ -1,9 +1,9 @@
 package api
 
 import (
-	"cmp"
+	"log"
 	"net/http"
-	"slices"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -163,7 +163,7 @@ func (apicfg *ApiConfig) HandlerMatchedGamesRanking(w http.ResponseWriter, req *
 
 			friendGames, err := apicfg.GetOwnedGames(friend.SteamID)
 			if err != nil {
-				RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetOwnedGames endpoint for friend", err)
+				log.Printf("Error getting games for %s: %v", friend.SteamID, err)
 				return
 			}
 
@@ -181,9 +181,14 @@ func (apicfg *ApiConfig) HandlerMatchedGamesRanking(w http.ResponseWriter, req *
 		results = append(results, result)
 	}
 
-	slices.SortFunc(results, func(friend1 ComparedMatchedGames, friend2 ComparedMatchedGames) int {
-		return cmp.Compare(friend1.FriendPercentage, friend2.FriendPercentage)
+	// Sort results by player's score in descending order
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Score > results[j].Score
 	})
+
+	for i := range results {
+		results[i].Ranking = i + 1
+	}
 
 	resp := struct {
 		Ranking []ComparedMatchedGames `json:"ranking"`

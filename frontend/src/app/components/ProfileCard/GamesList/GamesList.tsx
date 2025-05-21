@@ -12,8 +12,8 @@ export default function GamesList({ games, listType, setMatchingGamesDisplay, se
     setMissingGamesDisplay: MouseEventHandler<HTMLButtonElement>,
   }) {
 
-  const iconWidth = 50;
-  const iconHeight = 50;
+  const iconWidth = 40;
+  const iconHeight = 40;
 
   if (games != null) {
     games?.sort((a: Game, b: Game): number => {

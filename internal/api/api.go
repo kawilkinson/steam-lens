@@ -71,7 +71,7 @@ type Game struct {
 
 type OwnedGames struct {
 	SteamID   string
-	GameCount int    `json:"gameCount"`
+	GameCount int    `json:"game_count"`
 	Games     []Game `json:"games"`
 }
 
@@ -209,6 +209,8 @@ func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appid string) (PlayerAch
 }
 
 type ComparedMatchedGames struct {
+	Score            float64 `json:"score"`
+	Ranking          int     `json:"ranking"`
 	UserID           string  `json:"userID"`
 	UserPercentage   float64 `json:"userPercentage"`
 	FriendID         string  `json:"friendID"`
@@ -246,6 +248,10 @@ func (userGames OwnedGames) CompareOwnedGames(friendGames OwnedGames, listGames 
 	if friendGames.GameCount > 0 {
 		result.FriendPercentage = float64(result.Matches) / float64(friendGames.GameCount)
 	}
+
+	matchesWeight := 0.7
+	percentWeight := 0.3
+	result.Score = float64(result.Matches)*matchesWeight + result.FriendPercentage*100.0*percentWeight
 
 	if !listGames {
 		result.MatchingGames = nil

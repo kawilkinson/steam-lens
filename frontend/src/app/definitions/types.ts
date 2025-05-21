@@ -14,6 +14,8 @@ export interface Game {
 }
 
 export interface MatchingGames {
+	ranking: number;
+	score: number;
 	UserID: string;
 	UserPercentage: number;
     friendID: string;
