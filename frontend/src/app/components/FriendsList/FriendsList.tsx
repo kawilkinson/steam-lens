@@ -18,6 +18,8 @@ export default async function FriendsList( { steamid: steamID }: { steamid: stri
         players[summary.steamID] = summary;
     })
 
+	const numOfRanks = summaries.length;
+
     return (
 		<div className={styles.container}>
 			<div className={styles.header}>
@@ -34,6 +36,7 @@ export default async function FriendsList( { steamid: steamID }: { steamid: stri
 							<ProfileCard
 							games={entry}
 							summary={summary}
+							numOfRanks={numOfRanks}
 							/>
 						</li>
 						);
