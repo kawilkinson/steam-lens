@@ -249,8 +249,8 @@ func (userGames OwnedGames) CompareOwnedGames(friendGames OwnedGames, listGames 
 		result.FriendPercentage = float64(result.Matches) / float64(friendGames.GameCount)
 	}
 
-	matchesWeight := 0.7
-	percentWeight := 0.3
+	matchesWeight := 0.55
+	percentWeight := 0.45
 	result.Score = float64(result.Matches)*matchesWeight + result.FriendPercentage*100.0*percentWeight
 
 	if !listGames {

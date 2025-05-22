@@ -66,6 +66,8 @@ export default function ProfileCard({ summary, games, numOfRanks }: {
           listType={listType}
           setMatchingGamesDisplay={setMatchingGamesDisplay}
           setMissingGamesDisplay={setMissingGamesDisplay}
+          numMatchingGames={games.matchingGames.length}
+          numMissingGames={games.friendOnlyGames.length}
         />
       }
     </div>

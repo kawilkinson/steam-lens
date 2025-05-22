@@ -4,12 +4,19 @@ import GameIcon from "./GameIcon/GameIcon";
 import { MouseEventHandler } from "react";
 
 
-export default function GamesList({ games, listType, setMatchingGamesDisplay, setMissingGamesDisplay }:
-  {
+export default function GamesList({ games, 
+  listType, 
+  setMatchingGamesDisplay, 
+  setMissingGamesDisplay, 
+  numMatchingGames, 
+  numMissingGames 
+}: {
     games: Game[] | null,
     listType: "matching" | "missing",
     setMatchingGamesDisplay: MouseEventHandler<HTMLButtonElement>,
     setMissingGamesDisplay: MouseEventHandler<HTMLButtonElement>,
+    numMatchingGames: number,
+    numMissingGames: number,
   }) {
 
   const iconWidth = 40;
@@ -42,6 +49,12 @@ export default function GamesList({ games, listType, setMatchingGamesDisplay, se
           disabled={listType === "missing"}>
           <h3>Missing Games</h3>
         </button>
+      </div>
+      <div className={styles.counts}>
+        {listType === "matching"
+        ? <span className={styles.matchingCount}>{numMatchingGames} games both players own</span>
+        : <span className={styles.missingCount}>{numMissingGames} games only friend owns</span>
+        }
       </div>
       <div className={styles.list}>
         {games != null && games.length > 0 && games.map((game) => {
