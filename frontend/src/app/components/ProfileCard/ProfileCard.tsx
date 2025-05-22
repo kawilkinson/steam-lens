@@ -7,9 +7,10 @@ import { MouseEvent, useState } from "react";
 import GamesList from "./GamesList/GamesList";
 import Rankings from "./Rankings/Rankings";
 
-export default function ProfileCard({ summary, games }: {
+export default function ProfileCard({ summary, games, numOfRanks }: {
   summary: PlayerSummary,
   games: MatchingGames | null,
+  numOfRanks: number,
 }) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [listType, setListType] = useState<"matching" | "missing">("matching");
@@ -40,7 +41,6 @@ export default function ProfileCard({ summary, games }: {
     }
   };
 
-  console.log("Games prop passed to Rankings:", games);
   return (
     <div className={styles.container} onClick={handleToggleExpand} style={{ cursor: "pointer" }}>
       <div className={styles.header}>
@@ -57,7 +57,7 @@ export default function ProfileCard({ summary, games }: {
 
           {games == null || games.friendGamesCount == 0 ? <></>
           :
-          <Rankings rankings={games} />}
+          <Rankings rankings={games} numOfRanks={numOfRanks}/>}
 
       </div>
       {expanded && games &&
