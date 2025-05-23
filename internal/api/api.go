@@ -1,7 +1,9 @@
 package api
 
 import (
+	"cmp"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/url"
 	"slices"
@@ -32,6 +34,30 @@ type SummariesResponse struct {
 
 // Make API call to Steam's GetPlayerSummaries endpoint to obtain player data for all steam IDs provided
 func (apicfg *ApiConfig) GetPlayerSummaries(steamIDs []string) (Summaries, error) {
+	uncachedIDs := []string{}
+	cachedPlayers := []Player{}
+
+	for _, steamID := range steamIDs {
+		cache, found := apicfg.PlayerCache.ReadCache(steamID)
+		if found {
+			log.Printf("Cache found for steamID: %s\n", steamID)
+			cachedPlayers = append(cachedPlayers, cache)
+		} else {
+			uncachedIDs = append(uncachedIDs, steamID)
+		}
+	}
+
+	if len(uncachedIDs) == 0 {
+		slices.SortFunc(cachedPlayers, func(i Player, j Player) int {
+			return cmp.Compare(i.SteamID, j.SteamID)
+		})
+		return Summaries{
+			Players: cachedPlayers,
+		}, nil
+	}
+
+	joinedIDs := strings.Join(uncachedIDs, ",")
+
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
 		return Summaries{}, err
@@ -41,7 +67,7 @@ func (apicfg *ApiConfig) GetPlayerSummaries(steamIDs []string) (Summaries, error
 
 	query := url.Values{}
 	query.Set("key", apicfg.SteamApiKey)
-	query.Set("steamids", strings.Join(steamIDs, ","))
+	query.Set("steamids", joinedIDs)
 
 	fullURL.RawQuery = query.Encode()
 
@@ -81,6 +107,12 @@ type OwnedGamesResponse struct {
 
 // Make API call to Steam's GetOwnedGames endpoint to obtain all owned games for a user
 func (apicfg *ApiConfig) GetOwnedGames(steamID string) (OwnedGames, error) {
+	_, found := apicfg.OwnedGamesCache.ReadCache(steamID)
+	if found {
+		log.Printf("OwnedGames cache found for %s\n", steamID)
+		return apicfg.OwnedGamesCache.Cache[steamID].Data, nil
+	}
+
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
 		return OwnedGames{}, err
@@ -130,6 +162,12 @@ type FriendListResponse struct {
 
 // Make API call to Steam's GetFriendList endpoint to obtain all friends for a user
 func (apicfg *ApiConfig) GetFriendList(steamID string) (FriendList, error) {
+	_, found := apicfg.FriendListCache.ReadCache(steamID)
+	if found {
+		log.Printf("FriendList cache found for %s\n", steamID)
+		return apicfg.FriendListCache.Cache[steamID].Data, nil
+	}
+
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
 		return FriendList{}, err

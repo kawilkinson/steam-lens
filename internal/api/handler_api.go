@@ -10,6 +10,10 @@ import (
 
 type ApiConfig struct {
 	SteamApiKey string
+
+	PlayerCache     Cache[Player]
+	FriendListCache Cache[FriendList]
+	OwnedGamesCache Cache[OwnedGames]
 }
 
 func (apicfg *ApiConfig) HandlerGetPlayerSummaries(w http.ResponseWriter, req *http.Request) {
