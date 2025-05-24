@@ -25,3 +25,8 @@ export interface MatchingGames {
 	matchingGames: Game[];
     friendOnlyGames: Game[];
 }
+
+export interface Achievement {
+	apiName: string;
+	achieved: boolean;
+}

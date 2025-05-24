@@ -33,7 +33,7 @@ func (cache *Cache[T]) ReadCache(steamID string) (T, bool) {
 		var zero T
 		return zero, false
 	}
-	if time.Since(item.CachedTime) > cache.RenewTime {
+	if time.Since(item.CachedTime) >= cache.RenewTime {
 		var zero T
 		return zero, false
 	}
@@ -41,14 +41,14 @@ func (cache *Cache[T]) ReadCache(steamID string) (T, bool) {
 	return cache.Cache[steamID].Data, true
 }
 
-func (cache *Cache[T]) CreateCacheData(steamID string, data T) {
+func (cache *Cache[T]) UpdateCache(steamID string, data T) {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
 
-	cache.Cache[steamID] = CachedData[T]{
-		Data:       data,
-		CachedTime: time.Now(),
-	}
+	cacheData := cache.Cache[steamID]
+	cacheData.Data = data
+	cacheData.CachedTime = time.Now().UTC()
+	cache.Cache[steamID] = cacheData
 }
 
 type Cleaner[T any] struct {

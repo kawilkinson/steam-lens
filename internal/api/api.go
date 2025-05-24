@@ -85,6 +85,12 @@ func (apicfg *ApiConfig) GetPlayerSummaries(steamIDs []string) (Summaries, error
 		return Summaries{}, err
 	}
 
+	allPlayers := body.Response.Players
+	for _, player := range allPlayers {
+		log.Printf("Adding player to cache with steamID: %s\n", player.SteamID)
+		apicfg.PlayerCache.UpdateCache(player.SteamID, player)
+	}
+
 	return body.Response, nil
 }
 
@@ -143,6 +149,8 @@ func (apicfg *ApiConfig) GetOwnedGames(steamID string) (OwnedGames, error) {
 
 	body.Response.SteamID = steamID
 
+	apicfg.OwnedGamesCache.UpdateCache(steamID, body.Response)
+
 	return body.Response, nil
 }
 
@@ -196,13 +204,14 @@ func (apicfg *ApiConfig) GetFriendList(steamID string) (FriendList, error) {
 		return FriendList{}, err
 	}
 
+	apicfg.FriendListCache.UpdateCache(steamID, body.Friendlist)
+
 	return body.Friendlist, nil
 }
 
 type Achievement struct {
-	ApiName    string `json:"apiName"`
-	Achieved   bool   `json:"achieved"`
-	UnlockTime string `json:"unlockTime"`
+	ApiName  string `json:"apiName"`
+	Achieved bool   `json:"achieved"`
 }
 
 type PlayerAchievements struct {
@@ -215,6 +224,12 @@ type PlayerAchievementsResponse struct {
 
 // Make API call to Steam's GetPlayerAchievements endpoint to obtain all achievements for a game
 func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appid string) (PlayerAchievements, error) {
+	_, found := apicfg.AchievementsCache.ReadCache(steamID)
+	if found {
+		log.Printf("FriendList cache found for %s\n", steamID)
+		return apicfg.AchievementsCache.Cache[steamID].Data, nil
+	}
+
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
 		return PlayerAchievements{}, err
@@ -242,6 +257,8 @@ func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appid string) (PlayerAch
 	if err != nil {
 		return PlayerAchievements{}, err
 	}
+
+	apicfg.AchievementsCache.UpdateCache(steamID, body.PlayerAchievements)
 
 	return body.PlayerAchievements, nil
 }

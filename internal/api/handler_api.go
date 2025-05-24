@@ -14,6 +14,7 @@ type ApiConfig struct {
 	PlayerCache     Cache[Player]
 	FriendListCache Cache[FriendList]
 	OwnedGamesCache Cache[OwnedGames]
+	AchievementsCache Cache[PlayerAchievements]
 }
 
 func (apicfg *ApiConfig) HandlerGetPlayerSummaries(w http.ResponseWriter, req *http.Request) {
