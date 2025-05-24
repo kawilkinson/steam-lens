@@ -5,9 +5,10 @@ import GameIcon from "./GameIcon/GameIcon";
 import { MouseEventHandler } from "react";
 import { AchievementComparisonData } from "@/app/definitions/types";
 import { getAchievementComparison } from "@/app/api/api";
+import AchievementSummary from "./AchievementSummary/AchievementSummary";
 
-
-export default function GamesList({ games, 
+export default function GamesList({ 
+  games, 
   listType, 
   setMatchingGamesDisplay, 
   setMissingGamesDisplay, 
@@ -98,73 +99,37 @@ export default function GamesList({ games,
             {numMissingGames} games only friend owns
           </span>
         )}
+        {listType === "achievements" && (
+          <span className={styles.achievementCount}>
+            {numMatchingGames} games to compare achievements with
+          </span>
+        )}
       </div>
-      <div className={styles.list}>
-        {games && games.length > 0 ? (
-          games.map((game) => (
-            <div key={game.appID} className={styles.gameWrapper}>
-              {(listType === "matching" || listType === "missing") && (
-                <a
-                  className={`${styles.game} ${listType === "missing" ? styles.missingEntry : ""}`}
-                  href={`https://store.steampowered.com/app/${game.appID}/`}
-                  target="_blank"
-                  rel="noopener"
-                  onClick={(ev) => ev.stopPropagation()}
-                >
-                  <GameIcon game={game} width={iconWidth} height={iconHeight} />
-                  <p>{game.name}</p>
-                </a>
-              )}
-              {listType === "achievements" && (
-                <>
-                  <button
-                    className={`${styles.game} ${styles.achievementEntry} ${expandedAppID === game.appID ? styles.expanded : ""}`}
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleGameClick(game.appID);
-                    }}
+        <div className={styles.list}>
+          {games && games.length > 0 ? (
+            games.map((game) => (
+              <div key={game.appID} className={styles.gameWrapper}>
+                {(listType === "matching" || listType === "missing") && (
+                  <a
+                    className={`${styles.game} ${listType === "missing" ? styles.missingEntry : ""}`}
+                    href={`https://store.steampowered.com/app/${game.appID}/`}
+                    target="_blank"
+                    rel="noopener"
+                    onClick={ev => ev.stopPropagation()}
                   >
                     <GameIcon game={game} width={iconWidth} height={iconHeight} />
                     <p>{game.name}</p>
-                  </button>
-                  {expandedAppID === game.appID && (
-                    <div className={styles.achievementComparison}>
-                      {loading === game.appID ? (
-                        <p>Loading achievements...</p>
-                      ) : achievementData[game.appID] ? (
-                        <div className={styles.achievementSummary}>
-                          {(() => {
-                            const playerAch = achievementData[game.appID]?.player?.achievements ?? [];
-                            const friendAch = achievementData[game.appID]?.friend?.achievements ?? [];
-                            const playerCount = playerAch.filter(a => a.achieved).length;
-                            const friendCount = friendAch.filter(a => a.achieved).length;
-                            const total = Math.max(playerAch.length, friendAch.length);
-
-                            let verdict = "It's a tie";
-                            if (playerCount > friendCount) {
-                              verdict = "User has more achievements";
-                            } else if (friendCount > playerCount) {
-                              verdict = "Friend has more achievements";
-                            }
-
-                            return (
-                              <>
-                                <p>
-                                  <strong>You:</strong> {playerCount} / {total} achievements
-                                </p>
-                                <p>
-                                  <strong>Friend:</strong> {friendCount} / {total} achievements
-                                </p>
-                                <p>{verdict}</p>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ) : null}
-                    </div>
-                  )}
-                </>
-              )}
+                  </a>
+                )}
+                {listType === "achievements" && (
+                  <AchievementSummary
+                    game={game}
+                    expandedAppID={expandedAppID}
+                    handleGameClick={handleGameClick}
+                    loading={loading}
+                    achievementData={achievementData}
+                  />
+                )}
             </div>
           ))
         ) : (
