@@ -30,3 +30,12 @@ export interface Achievement {
 	apiName: string;
 	achieved: boolean;
 }
+
+export interface PlayerAchievements {
+	achievements: Achievement[];
+}
+
+export interface AchievementComparisonData {
+	player: PlayerAchievements;
+	friend: PlayerAchievements;
+}

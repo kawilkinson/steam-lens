@@ -7,13 +7,14 @@ import { MouseEvent, useState } from "react";
 import GamesList from "./GamesList/GamesList";
 import Rankings from "./Rankings/Rankings";
 
-export default function ProfileCard({ summary, games, numOfRanks }: {
+export default function ProfileCard({ summary, games, numOfRanks, userID }: {
   summary: PlayerSummary,
   games: MatchingGames | null,
   numOfRanks: number,
+  userID: string
 }) {
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [listType, setListType] = useState<"matching" | "missing">("matching");
+  const [listType, setListType] = useState<"matching" | "missing" | "achievements">("matching");
   const [displayGames, setDisplayGames] = useState<Game[] | null>(null);
 
   const handleToggleExpand = () => {
@@ -41,6 +42,14 @@ export default function ProfileCard({ summary, games, numOfRanks }: {
     }
   };
 
+  const setAchievementsDisplay = (ev: MouseEvent<HTMLButtonElement>) => {
+    ev.stopPropagation();
+    if (games) {
+      setDisplayGames(games.matchingGames);
+      setListType("achievements")
+    }
+  }
+
   return (
     <div className={styles.container} onClick={handleToggleExpand} style={{ cursor: "pointer" }}>
       <div className={styles.header}>
@@ -66,8 +75,11 @@ export default function ProfileCard({ summary, games, numOfRanks }: {
           listType={listType}
           setMatchingGamesDisplay={setMatchingGamesDisplay}
           setMissingGamesDisplay={setMissingGamesDisplay}
+          setAchievementsDisplay={setAchievementsDisplay}
           numMatchingGames={games.matchingGames.length}
           numMissingGames={games.friendOnlyGames.length}
+          userID={userID}
+          friendID={games.friendID}
         />
       }
     </div>

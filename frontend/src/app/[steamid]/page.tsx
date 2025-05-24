@@ -6,9 +6,9 @@ import { PlayerSummary } from "../definitions/types";
 import Link from "next/link";
 
 export default async function GamesPage({ params }: { params: { steamid: string } }) {
-    const steamid = (await params).steamid;
+    const steamID = (await params).steamid;
 
-    const resp = await getPlayerSummaries(steamid);
+    const resp = await getPlayerSummaries(steamID);
 
     let summary: PlayerSummary | null = null
     if (resp.length > 0) {
@@ -24,11 +24,11 @@ export default async function GamesPage({ params }: { params: { steamid: string 
         <main className={styles.main}>
         {summary != null ?
             <>
-            <ProfileCard summary={summary!} games={null} numOfRanks={0} />
-            <FriendsList steamid={steamid} />
+            <ProfileCard summary={summary!} games={null} numOfRanks={0} userID={steamID} />
+            <FriendsList steamid={steamID} />
             </>
             :
-            <p className={styles.error}>Invalid id {steamid}</p>
+            <p className={styles.error}>Invalid id {steamID}</p>
         }
         </main>
 

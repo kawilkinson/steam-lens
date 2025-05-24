@@ -210,8 +210,8 @@ func (apicfg *ApiConfig) GetFriendList(steamID string) (FriendList, error) {
 }
 
 type Achievement struct {
-	ApiName  string `json:"apiName"`
-	Achieved bool   `json:"achieved"`
+	ApiName  string `json:"apiname"`
+	Achieved int    `json:"achieved"`
 }
 
 type PlayerAchievements struct {
@@ -219,34 +219,45 @@ type PlayerAchievements struct {
 }
 
 type PlayerAchievementsResponse struct {
-	PlayerAchievements PlayerAchievements
+	PlayerAchievements PlayerAchievements `json:"playerstats"`
+}
+
+// Steam returns an int for achieved status, using this struct to convert to bool
+type ConvertedAchievement struct {
+	ApiName  string `json:"apiName"`
+	Achieved bool   `json:"achieved"`
+}
+
+type ConvertedPlayerAchievements struct {
+	Achievements []ConvertedAchievement `json:"achievements"`
 }
 
 // Make API call to Steam's GetPlayerAchievements endpoint to obtain all achievements for a game
-func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appid string) (PlayerAchievements, error) {
-	_, found := apicfg.AchievementsCache.ReadCache(steamID)
+func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appID string) (ConvertedPlayerAchievements, error) {
+	cacheKey := steamID + "-" + appID
+	_, found := apicfg.AchievementsCache.ReadCache(cacheKey)
 	if found {
-		log.Printf("FriendList cache found for %s\n", steamID)
-		return apicfg.AchievementsCache.Cache[steamID].Data, nil
+		log.Printf("Achievements cache found for %s\n", cacheKey)
+		return apicfg.AchievementsCache.Cache[cacheKey].Data, nil
 	}
 
 	baseURL, err := url.Parse(steamMainAPIURL)
 	if err != nil {
-		return PlayerAchievements{}, err
+		return ConvertedPlayerAchievements{}, err
 	}
 
 	fullURL := baseURL.JoinPath(steamAchievementURL, "GetPlayerAchievements", "v0001/")
 
 	query := url.Values{}
+	query.Set("appid", appID)
 	query.Set("key", apicfg.SteamApiKey)
 	query.Set("steamid", steamID)
-	query.Set("appid", appid)
 
 	fullURL.RawQuery = query.Encode()
 
 	resp, err := http.Get(fullURL.String())
 	if err != nil {
-		return PlayerAchievements{}, err
+		return ConvertedPlayerAchievements{}, err
 	}
 	defer resp.Body.Close()
 
@@ -255,12 +266,27 @@ func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appid string) (PlayerAch
 	body := PlayerAchievementsResponse{}
 	err = decoder.Decode(&body)
 	if err != nil {
-		return PlayerAchievements{}, err
+		return ConvertedPlayerAchievements{}, err
 	}
 
-	apicfg.AchievementsCache.UpdateCache(steamID, body.PlayerAchievements)
+	// Use helper function to convert int values in achieved status to bool value
+	convertedAchievements := convertAchievements(body.PlayerAchievements)
 
-	return body.PlayerAchievements, nil
+	apicfg.AchievementsCache.UpdateCache(cacheKey, convertedAchievements)
+
+	return convertedAchievements, nil
+}
+
+// Helper function to converted achievements to bool type
+func convertAchievements(input PlayerAchievements) ConvertedPlayerAchievements {
+	converted := make([]ConvertedAchievement, len(input.Achievements))
+	for i, ach := range input.Achievements {
+		converted[i] = ConvertedAchievement{
+			ApiName:  ach.ApiName,
+			Achieved: ach.Achieved == 1,
+		}
+	}
+	return ConvertedPlayerAchievements{Achievements: converted}
 }
 
 type ComparedMatchedGames struct {
@@ -304,8 +330,8 @@ func (userGames OwnedGames) CompareOwnedGames(friendGames OwnedGames, listGames 
 		result.FriendPercentage = float64(result.Matches) / float64(friendGames.GameCount)
 	}
 
-	matchesWeight := 0.55
-	percentWeight := 0.45
+	matchesWeight := 0.6
+	percentWeight := 0.4
 	result.Score = float64(result.Matches)*matchesWeight + result.FriendPercentage*100.0*percentWeight
 
 	if !listGames {

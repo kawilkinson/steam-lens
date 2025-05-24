@@ -90,6 +90,81 @@
 	font-weight: 600;
 }
 
+.activeAchievements {
+	background-color: #4c68ef;
+	border-color: #a0b9f7;
+	color: #fff;
+}
+
+.achievementsList {
+	background-color: #23272f;
+}
+
+.achievementEntry {
+	transition: box-shadow 0.2s, background 0.2s;
+	border: 3px solid #4c68ef;
+}
+
+.achievementEntry.expanded,
+.achievementEntry:focus {
+	background-color: #e0e7fa;
+	box-shadow: 0 0 8px 2px rgba(76,104,239,0.09);
+}
+
+.achievementEntry:hover {
+	background-color: #d0e0ff;
+}
+
+.achievementComparison {
+  margin: 10px 0 0 45px;
+  background: #23272f;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(40,40,60,0.12);
+  overflow-x: auto;
+  max-width: 90vw;
+  padding: 10px 0;
+}
+
+.achievementComparison table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.96rem;
+}
+
+.achievementComparison th,
+.achievementComparison td {
+	padding: 6px 10px;
+	border-bottom: 1px solid #dbeafe;
+	text-align: left;
+}
+
+.achievementComparison th {
+	background: #f1f5fb;
+	font-weight: 700;
+}
+
+.achievementComparison tr:last-child td {
+	border-bottom: none;
+}
+
+.expanded {
+	box-shadow: 0 0 0 2px #4c68ef inset;
+}
+
+.achievementSummary {
+  padding: 12px 20px;
+  background: #23272f;
+  color: #f3f3f3;
+  border-radius: 8px;
+  margin: 0 0 10px 45px;
+  box-shadow: 0 2px 8px rgba(40,40,60,0.10);
+  font-size: 1.08rem;
+}
+
+.achievementSummary strong {
+  color: #ffd700;
+}
+
 @media only screen and (max-width: 1280px) {
 	.list {
 		grid-template-columns: repeat(2, 1fr);
@@ -99,5 +174,18 @@
 @media only screen and (max-width: 768px) {
 	.list {
 		grid-template-columns: repeat(1, 1fr);
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.achievementComparison {
+		margin-left: 0;
+		padding: 4px;
+	}
+	.achievementComparison table,
+	.achievementComparison th,
+	.achievementComparison td {
+		font-size: 0.85rem;
+		padding: 4px 6px;
 	}
 }
