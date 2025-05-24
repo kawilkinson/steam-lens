@@ -11,16 +11,16 @@ import (
 type ApiConfig struct {
 	SteamApiKey string
 
-	PlayerCache     Cache[Player]
-	FriendListCache Cache[FriendList]
-	OwnedGamesCache Cache[OwnedGames]
-	AchievementsCache Cache[PlayerAchievements]
+	PlayerCache       Cache[Player]
+	FriendListCache   Cache[FriendList]
+	OwnedGamesCache   Cache[OwnedGames]
+	AchievementsCache Cache[ConvertedPlayerAchievements]
 }
 
 func (apicfg *ApiConfig) HandlerGetPlayerSummaries(w http.ResponseWriter, req *http.Request) {
-	steamIDs := req.URL.Query().Get("steamids")
+	steamIDs := req.URL.Query().Get("steamIDs")
 	if steamIDs == "" {
-		RespondWithError(w, http.StatusBadRequest, "'steamids' parameter is required for getting player summaries", nil)
+		RespondWithError(w, http.StatusBadRequest, "'steamIDs' parameter is required for getting player summaries", nil)
 		return
 	}
 
@@ -34,7 +34,7 @@ func (apicfg *ApiConfig) HandlerGetPlayerSummaries(w http.ResponseWriter, req *h
 }
 
 func (apicfg *ApiConfig) HandlerGetFriendList(w http.ResponseWriter, req *http.Request) {
-	steamID := req.URL.Query().Get("steamid")
+	steamID := req.URL.Query().Get("steamID")
 	if steamID == "" {
 		RespondWithError(w, http.StatusBadRequest, "'steamid' parameter is required for getting friend list", nil)
 		return
@@ -61,7 +61,7 @@ func (apicfg *ApiConfig) HandlerGetFriendList(w http.ResponseWriter, req *http.R
 }
 
 func (apicfg *ApiConfig) HandlerGetOwnedGames(w http.ResponseWriter, req *http.Request) {
-	steamID := req.URL.Query().Get("steamid")
+	steamID := req.URL.Query().Get("steamID")
 	if steamID == "" {
 		RespondWithError(w, http.StatusBadRequest, "'steamid' parameter is required for getting player owned games", nil)
 		return
@@ -77,13 +77,13 @@ func (apicfg *ApiConfig) HandlerGetOwnedGames(w http.ResponseWriter, req *http.R
 }
 
 func (apicfg *ApiConfig) HandlerGetPlayerAchievements(w http.ResponseWriter, req *http.Request) {
-	steamID := req.URL.Query().Get("steamid")
+	steamID := req.URL.Query().Get("steamID")
 	if steamID == "" {
 		RespondWithError(w, http.StatusBadRequest, "'steamid' parameter is required for getting player achievements", nil)
 		return
 	}
 
-	appID := req.URL.Query().Get("appid")
+	appID := req.URL.Query().Get("appID")
 	if appID == "" {
 		RespondWithError(w, http.StatusBadRequest, "'appid' parameter is required for getting player achievements", nil)
 		return
@@ -96,6 +96,38 @@ func (apicfg *ApiConfig) HandlerGetPlayerAchievements(w http.ResponseWriter, req
 	}
 
 	RespondWithJSON(w, http.StatusOK, achievements)
+}
+
+func (apicfg *ApiConfig) HandlerCompareAchievements(w http.ResponseWriter, req *http.Request) {
+	playerID := req.URL.Query().Get("userID")
+	friendID := req.URL.Query().Get("friendID")
+	appID := req.URL.Query().Get("appID")
+
+	log.Printf("Comparing achievements: playerID=%s, friendID=%s, appID=%s", playerID, friendID, appID)
+
+	if playerID == "" || friendID == "" || appID == "" {
+		RespondWithError(w, http.StatusBadRequest, "Missing one or more required ID params", nil)
+		return
+	}
+
+	playerAchievements, err := apicfg.GetPlayerAchievements(playerID, appID)
+	if err != nil {
+		RespondWithError(w, http.StatusBadRequest, "Unable to perform API call to Steam GetPlayerAchievements for user", err)
+		return
+	}
+
+	friendAchievements, err := apicfg.GetPlayerAchievements(friendID, appID)
+	if err != nil {
+		RespondWithError(w, http.StatusBadRequest, "Unable to perform API call to Steam GetPlayerAchievements for friend", err)
+		return
+	}
+
+	result := map[string]interface{}{
+		"player": playerAchievements,
+		"friend": friendAchievements,
+	}
+
+	RespondWithJSON(w, http.StatusOK, result)
 }
 
 func (apicfg *ApiConfig) HandlerCompareOwnedGames(w http.ResponseWriter, req *http.Request) {
@@ -133,7 +165,7 @@ func (apicfg *ApiConfig) HandlerCompareOwnedGames(w http.ResponseWriter, req *ht
 }
 
 func (apicfg *ApiConfig) HandlerMatchedGamesRanking(w http.ResponseWriter, req *http.Request) {
-	steamid := req.URL.Query().Get("steamid")
+	steamid := req.URL.Query().Get("steamID")
 	if steamid == "" {
 		RespondWithError(w, http.StatusBadRequest, "'steamid' parameter is required for getting player info", nil)
 		return

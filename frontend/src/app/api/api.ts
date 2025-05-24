@@ -1,16 +1,16 @@
 "use server";
 
-import { MatchingGames, PlayerSummary } from "../definitions/types";
+import { MatchingGames, PlayerSummary, AchievementComparisonData } from "../definitions/types";
 import { baseURL } from "../definitions/urls";
 
-export async function getPlayerSummaries(steamids: string): Promise<PlayerSummary[]> {
+export async function getPlayerSummaries(steamIDs: string): Promise<PlayerSummary[]> {
 	if (!baseURL) {
 		console.log("Backend base URL not set up in environment variables")
 		return [];
 	}
 
 	const url = new URL("player-summaries", baseURL);
-	url.searchParams.set("steamids", steamids);
+	url.searchParams.set("steamIDs", steamIDs);
 
 	let summaries: PlayerSummary[] = [];
 
@@ -32,14 +32,14 @@ export async function getPlayerSummaries(steamids: string): Promise<PlayerSummar
 	return summaries;
 }
 
-export async function getFriendsList(steamid: string): Promise<PlayerSummary[]> {
+export async function getFriendsList(steamID: string): Promise<PlayerSummary[]> {
 	if (!baseURL) {
 		console.log("Backend base URL not set up in environment variables")
 		return [];
 	}
 
 	const url = new URL("friends", baseURL);
-	url.searchParams.set("steamid", steamid)
+	url.searchParams.set("steamID", steamID)
 
 	let friendsList: PlayerSummary[] = [];
 
@@ -62,14 +62,14 @@ export async function getFriendsList(steamid: string): Promise<PlayerSummary[]> 
 	return friendsList
 }
 
-export async function getMatchingGames(steamid: string): Promise<MatchingGames[]> {
+export async function getMatchingGames(steamID: string): Promise<MatchingGames[]> {
     if (!baseURL) {
         console.log("Backend base URL not set up in environment variable")
         return [];
     }
 
     const url = new URL("friends/matchGames", baseURL);
-    url.searchParams.set("steamid", steamid);
+    url.searchParams.set("steamID", steamID);
     url.searchParams.set("listGames", "true");
 
     let matchedGamesRanking: MatchingGames[] = [];
@@ -92,4 +92,37 @@ export async function getMatchingGames(steamid: string): Promise<MatchingGames[]
     }
 
     return matchedGamesRanking
+}
+
+export async function getAchievementComparison(
+  userID: string,
+  friendID: string,
+  appID: number
+): Promise<AchievementComparisonData | null> {
+  if (!baseURL) {
+    console.log("Backend base URL not set up in environment variables");
+    return null;
+  }
+
+  const url = new URL("compare-achievements", baseURL);
+  url.searchParams.set("userID", userID);
+  url.searchParams.set("friendID", friendID);
+  url.searchParams.set("appID", appID.toString());
+
+  try {
+    console.log(`Sending request for Achievement Comparison: GET ${url.toString()}`);
+	console.log("Fetching achievement comparison", userID, friendID, appID);
+    const resp = await fetch(url);
+
+    if (resp.status >= 400) {
+      throw new Error(`Failed http request with status ${resp.status}`);
+    }
+
+    // This should match the AchievementComparisonData interface
+    const data: AchievementComparisonData = await resp.json();
+    return data;
+  } catch (e) {
+    console.log(`Failed to get achievement comparison: ${e}`);
+    return null;
+  }
 }
