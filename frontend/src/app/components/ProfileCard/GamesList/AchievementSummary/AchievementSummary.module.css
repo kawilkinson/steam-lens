@@ -1,0 +1,57 @@
+.achievementComparison {
+  margin: 10px 0 0 45px;
+  background: #333842;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(40,40,60,0.12);
+  overflow-x: auto;
+  max-width: 90vw;
+  padding: 10px 0;
+}
+
+.achievementComparison table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.96rem;
+}
+
+.achievementComparison th,
+.achievementComparison td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #dbeafe;
+  text-align: left;
+}
+
+.achievementComparison th {
+  background: #f1f5fb;
+  font-weight: 700;
+}
+
+.achievementComparison tr:last-child td {
+  border-bottom: none;
+}
+
+.achievementSummary {
+  padding: 12px 20px;
+  background: #333842;
+  border-radius: 8px;
+  margin: 0 0 10px 45px;
+  box-shadow: 0 2px 8px rgba(40,40,60,0.10);
+  font-size: 1.08rem;
+}
+
+.achievementSummary strong {
+  color: #e4c201;
+}
+
+@media only screen and (max-width: 480px) {
+  .achievementComparison {
+    margin-left: 0;
+    padding: 4px;
+  }
+  .achievementComparison table,
+  .achievementComparison th,
+  .achievementComparison td {
+    font-size: 0.85rem;
+    padding: 4px 6px;
+  }
+}
