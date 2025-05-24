@@ -62,6 +62,10 @@ func run() error {
 				Cache:     map[string]api.CachedData[api.OwnedGames]{},
 				RenewTime: 60 * time.Minute,
 			},
+			AchievementsCache: api.Cache[api.PlayerAchievements]{
+				Cache:     map[string]api.CachedData[api.PlayerAchievements]{},
+				RenewTime: 60 * time.Minute,
+			},
 		},
 	}
 
