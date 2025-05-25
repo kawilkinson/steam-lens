@@ -63,12 +63,10 @@ export default function ProfileCard({ summary, games, numOfRanks, userID }: {
           />
           <p className={styles.personaname}>{summary.personaName}</p>
         </div>
-
           {games == null || games.friendGamesCount == 0 ? <></>
           :
           <Rankings rankings={games} numOfRanks={numOfRanks}/>}
-
-      </div>
+        </div>
       {expanded && games &&
         <GamesList
           games={displayGames}

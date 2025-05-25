@@ -18,12 +18,13 @@ export default async function GamesPage({ params }: { params: { steamid: string 
     return (
     <>
         <header className={styles.header}>
-        <h1>Steam Lens</h1>
+        <h1 className={styles.logoTitle}>Steam Lens</h1>
         <Link href="/" className={styles.homeButton}>Home</Link>
         </header>
         <main className={styles.main}>
         {summary != null ?
             <>
+            <p className={styles.title}>User</p>
             <ProfileCard summary={summary!} games={null} numOfRanks={0} userID={steamID} />
             <FriendsList steamid={steamID} />
             </>

@@ -3,12 +3,31 @@
   align-items: center;
   justify-content: space-between;
   margin: 40px;
-  font-size: 30px;
   font-weight: bold;
+}
+
+.logoTitle {
+  font-family: 'Segoe UI', 'Arial', 'Helvetica Neue', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, var(--accent-200) 10%, var(--steam-light-blue) 90%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+  opacity: 0.93;
 }
 
 .main {
   margin: 20px;
+}
+
+.title {
+  display: flex;
+	justify-content: space-between;	
+	padding: 10px 20px;
+	font-size: 2.0rem;
 }
 
 .error {
@@ -18,15 +37,22 @@
 }
 
 .homeButton {
-  font-size: 1.2rem;
-  border: 5px solid var(--accent-dark-rgb);
-  background-color: var(--accent-dark-rgb);
-  border-radius: 15%;
-  padding: 15px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--accent-light-rgb) 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  box-shadow: 0 2px 8px 0 #10181e33;
   text-align: center;
+  transition: background 0.18s, color 0.18s, transform 0.14s;
+  outline: none;
 }
 
-.homeButton:hover {
-  border-color: var(--accent-light-rgb);
-  background-color: var(--accent-light-rgb);
+.homeButton:hover, .homeButton:focus-visible {
+  background: linear-gradient(90deg, var(--accent-200) 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  transform: translateY(-1px) scale(1.03);
+  opacity: 1;
 }

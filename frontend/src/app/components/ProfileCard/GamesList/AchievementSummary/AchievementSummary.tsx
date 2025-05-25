@@ -32,7 +32,7 @@ export default function AchievementSummary({
     return (
       <div className={achievementStyles.achievementSummary}>
         <p>
-          <strong>You:</strong> {playerCount} / {total} achievements
+          <strong>User:</strong> {playerCount} / {total} achievements
         </p>
         <p>
           <strong>Friend:</strong> {friendCount} / {total} achievements
