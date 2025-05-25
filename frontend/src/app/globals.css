@@ -8,6 +8,14 @@
 
   --error-light-rgb: rgb(120, 60, 60);
   --error-dark-rgb: rgb(80, 20, 20);
+
+  --steam-blue: #1b2838;
+  --steam-light-blue: #66c0f4;
+  --accent-100: #c7d5e0;
+  --accent-200: #a4b1be;
+  --accent-300: #e5e9f1;
+
+  --dark-card: rgba(23,26,33,0.85);
 }
 
 * {

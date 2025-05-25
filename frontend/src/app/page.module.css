@@ -1,23 +1,44 @@
 .header {
   display: flex;
-  flex-direction: column;
-  margin: 20px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 40px;
   font-size: 30px;
   font-weight: bold;
+}
+
+.logoTitle {
+  font-family: 'Segoe UI', 'Arial', 'Helvetica Neue', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, var(--accent-200) 10%, var(--steam-light-blue) 90%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+  opacity: 0.93;
+}
+
+.h2 {
+  font-weight: bold;
+  font-size: 1.4rem;
 }
 
 .section {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin: 25px 15px;
+  background-color: var(--dark-card);
+  border-radius: 20px;
+  border-left: 4px solid var(--steam-light-blue);
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.25);
+  margin: 28px 15px;
+  padding: 32px;
+  width: 85%;
+  max-width: 680px;
 
-  padding: 15px;
-  background-color: var(--accent-dark-rgb);
-  border-radius: 15px;
-
-  width: 70%;
-
+  backdrop-filter: blur(6px);
 }
 
 .form {
@@ -35,13 +56,30 @@
 .form input {
   width: 300px;
   background-color: #23272e;
-  outline: 2px solid #d1d5db;
-  outline-offset: 2px;
+  outline: none;
+  border: 1.5px solid #a4b1be;
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: #e5e9f1;
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
 }
 
 .form button {
-  width: 100px;
-  background-color: #23272e;
-  outline: 2px solid #d1d5db;
-  outline-offset: 2px;
+  background: linear-gradient(90deg, var(--accent-light-rgb) 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 10px 26px;
+  box-shadow: 0 2px 8px 0 #10181e33;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form button:hover {
+  background: linear-gradient(90deg, var(--accent-200) 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  transform: translateY(-1px) scale(1.03);
+  opacity: 1;
 }

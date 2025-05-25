@@ -1,41 +1,61 @@
 .container {
-	display: flex;
-	flex-direction: column;
-	padding: 2px 15px;
+  display: flex;
+  flex-direction: column;
+  background: var(--dark-card);
+  border-radius: 18px;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.16);
+  padding: 14px 28px 18px 28px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.15s;
+  border-left: 4px solid var(--steam-light-blue);
 }
 
 .container:hover {
-	cursor: pointer;
+  box-shadow: 0 6px 40px 0 rgba(52, 162, 225, 0.09);
+  cursor: pointer;
 }
 
 .header {
-	display: flex;
-	justify-content: space-between;
-	background-color: var(--accent-dark-rgb);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #26324a50;
 }
 
 .profileSection {
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .avatar {
-	margin: 10px 30px;
+  margin-right: 18px;
+  border-radius: 10px;
+  background: #202634;
+  box-shadow: 0 2px 8px rgba(60, 160, 240, 0.10);
 }
 
 .personaname {
-	font-size: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-200);
+  letter-spacing: 1px;
 }
 
 .error {
-	align-self: center;
-	color: red;
+  align-self: center;
+  color: #e15a5a;
+  font-size: 1rem;
 }
 
 @media only screen and (max-width: 768px) {
-	.header {
-		flex-direction: column;
-	}
-
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .container {
+    padding: 10px 8px 16px 8px;
+  }
 }

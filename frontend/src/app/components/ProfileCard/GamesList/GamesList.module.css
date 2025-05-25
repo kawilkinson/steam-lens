@@ -1,122 +1,136 @@
 .container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 20px 10px;
-	background-color: var(--accent-light-rgb);
-	max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 10px 24px 10px;
+  background-color: var(--dark-card);
+  border-radius: 18px;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.14);
+  max-height: 60vh;
 }
 
 .list {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 15px;
-	padding: 20px;
-	overflow-y: scroll;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  padding: 20px;
+  overflow-y: scroll;
 }
 
 .game {
-	display: flex;
-	align-items: center;
-	gap: 25px;
-	font-size: 1.12rem;
-	padding: 5px;
-	border: 3px solid var(--accent-dark-rgb);
-	border-radius: 10px;
-	width: 100%;
-	box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 1.08rem;
+  padding: 8px;
+  border: 2px solid var(--accent-dark-rgb);
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #23272e;
+  transition: border-color 0.18s, background 0.18s;
 }
 
 .game:hover {
-	background-color: var(--accent-dark-rgb);
-	cursor: pointer;
+  background-color: #26324a;
+  border-color: var(--steam-light-blue);
+  cursor: pointer;
 }
 
 .buttonsContainer {
-	display: flex;
-	gap: 10px;
-	margin-bottom: 15px;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 15px;
 }
 
 .button {
-	padding: 10px 20px;
-	border-radius: 15px;
+  padding: 8px 18px;
+  border-radius: 15px;
+  font-weight: 600;
+  background: linear-gradient(90deg, var(--accent-light-rgb) 20%, var(--steam-light-blue) 80%);
+  color: #181e24;
+  border: none;
+  box-shadow: 0 2px 8px 0 #10181e33;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
 }
 
-.active {
-	background-color: var(--accent-dark-rgb);
+.button:hover:not(:disabled) {
+  background: linear-gradient(90deg, var(--accent-200) 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  transform: translateY(-1px) scale(1.03);
+  opacity: 1;
+}
+
+.active, .activeAchievements {
+  background: #26324a;
+  color: var(--steam-light-blue);
 }
 
 .activeMissing {
-	background-color: var(--error-dark-rgb);
-	border-color: var(--error-light-rgb);
+  background: #e15a5a;
+  color: #fff;
 }
 
-.activeAchievements {
-	background-color: var(--accent-dark-rgb);
-}
-
-.button:hover {
-	cursor: pointer;
-}
-
-.button:disabled:hover {
-	cursor: default;
+.button:disabled {
+  opacity: 0.8;
+  cursor: default;
 }
 
 .missingList {
-	background-color: var(--error-light-rgb);
+  background-color: #322831;
 }
 
 .missingEntry {
-	border-color: var(--error-dark-rgb);
+  border-color: #e15a5a;
 }
 
 .missingEntry:hover {
-	background-color: var(--error-dark-rgb);
+  background-color: #412e2e;
 }
 
 .counts {
-	text-align: center;
-	font-size: 1rem;
-	margin-bottom: 0.75rem;
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #98b6ce;
 }
 
 .matchingCount {
-	color: #06ac38;
-	font-weight: 600;
+  color: #06ac38;
+  font-weight: 600;
 }
-
 .missingCount {
-	color: #d38a04;
-	font-weight: 600;
+  color: #d38a04;
+  font-weight: 600;
 }
-
 .achievementCount {
-	color: #cbd5e1;
-	font-weight: 600;
+  color: #cbd5e1;
+  font-weight: 600;
 }
 
 .achievementsList {
-	background-color: #333842;
+  background-color: #262e39;
 }
 
 .achievementEntry.expanded {
-	background-color: var(--accent-dark-rgb);
+  background-color: #232a34;
 }
 
 .achievementEntry:hover {
-	background-color: var(--accent-dark-rgb);
+  background-color: #26324a;
+  border-color: var(--steam-light-blue);
+  cursor: pointer;
 }
 
 @media only screen and (max-width: 1280px) {
-	.list {
-		grid-template-columns: repeat(2, 1fr);
-	}
+  .list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media only screen and (max-width: 768px) {
-	.list {
-		grid-template-columns: repeat(1, 1fr);
-	}
+  .list {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
