@@ -24,7 +24,6 @@ func (cfg *config) routesAPI() http.Handler {
 	router.Get("/player-summaries", cfg.steamAPI.HandlerGetPlayerSummaries)
 	router.Get("/friends", cfg.steamAPI.HandlerGetFriendList)
 	router.Get("/games", cfg.steamAPI.HandlerGetOwnedGames)
-	router.Get("/games/compares", cfg.steamAPI.HandlerCompareOwnedGames)
 	router.Get("/achievements", cfg.steamAPI.HandlerGetPlayerAchievements)
 	router.Get("/friends/matchGames", cfg.steamAPI.HandlerMatchedGamesRanking)
 	router.Get("/compare-achievements", cfg.steamAPI.HandlerCompareAchievements)

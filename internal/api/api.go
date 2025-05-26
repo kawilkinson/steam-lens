@@ -3,6 +3,9 @@ package api
 import (
 	"cmp"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -77,6 +80,13 @@ func (apicfg *ApiConfig) GetPlayerSummaries(steamIDs []string) (Summaries, error
 	}
 	defer resp.Body.Close()
 
+	contentType := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "application/json") {
+		testBody, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Unexpected response from Steam API: %s\n", testBody)
+		return Summaries{}, errors.New("steam API returned non-JSON response")
+	}
+
 	decoder := json.NewDecoder(resp.Body)
 
 	body := SummariesResponse{}
@@ -139,6 +149,13 @@ func (apicfg *ApiConfig) GetOwnedGames(steamID string) (OwnedGames, error) {
 	}
 	defer resp.Body.Close()
 
+	contentType := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "application/json") {
+		testBody, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Unexpected response from Steam API: %s\n", testBody)
+		return OwnedGames{}, errors.New("steam API returned non-JSON response")
+	}
+
 	decoder := json.NewDecoder(resp.Body)
 
 	body := OwnedGamesResponse{}
@@ -195,6 +212,13 @@ func (apicfg *ApiConfig) GetFriendList(steamID string) (FriendList, error) {
 		return FriendList{}, err
 	}
 	defer resp.Body.Close()
+
+	contentType := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "application/json") {
+		testBody, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Unexpected response from Steam API: %s\n", testBody)
+		return FriendList{}, errors.New("steam API returned non-JSON response")
+	}
 
 	decoder := json.NewDecoder(resp.Body)
 
@@ -260,6 +284,13 @@ func (apicfg *ApiConfig) GetPlayerAchievements(steamID, appID string) (Converted
 		return ConvertedPlayerAchievements{}, err
 	}
 	defer resp.Body.Close()
+
+	contentType := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "application/json") {
+		testBody, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Unexpected response from Steam API: %s\n", testBody)
+		return ConvertedPlayerAchievements{}, errors.New("steam API returned non-JSON response")
+	}
 
 	decoder := json.NewDecoder(resp.Body)
 
