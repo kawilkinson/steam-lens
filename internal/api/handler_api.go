@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 )
 
 type ApiConfig struct {
@@ -130,40 +131,6 @@ func (apicfg *ApiConfig) HandlerCompareAchievements(w http.ResponseWriter, req *
 	RespondWithJSON(w, http.StatusOK, result)
 }
 
-func (apicfg *ApiConfig) HandlerCompareOwnedGames(w http.ResponseWriter, req *http.Request) {
-	userID := req.URL.Query().Get("userID")
-	friendID := req.URL.Query().Get("friendID")
-	if userID == "" {
-		RespondWithError(w, http.StatusBadRequest, "User Steam ID is required", nil)
-		return
-	}
-	if friendID == "" {
-		RespondWithError(w, http.StatusBadRequest, "Friend Steam ID is required", nil)
-	}
-
-	listGames := false
-	listGamesQuery := req.URL.Query().Get("listGames")
-	if listGamesQuery == "true" {
-		listGames = true
-	}
-
-	userGames, err := apicfg.GetOwnedGames(userID)
-	if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetOwnedGames endpoint for user", err)
-		return
-	}
-
-	friendGames, err := apicfg.GetOwnedGames(friendID)
-	if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, "Unable to perform API calls to Steam GetOwnedGames endpoint for friend", err)
-		return
-	}
-
-	result := userGames.CompareOwnedGames(friendGames, listGames)
-
-	RespondWithJSON(w, http.StatusOK, result)
-}
-
 func (apicfg *ApiConfig) HandlerMatchedGamesRanking(w http.ResponseWriter, req *http.Request) {
 	steamid := req.URL.Query().Get("steamID")
 	if steamid == "" {
@@ -189,34 +156,62 @@ func (apicfg *ApiConfig) HandlerMatchedGamesRanking(w http.ResponseWriter, req *
 		return
 	}
 
-	waitgGroup := sync.WaitGroup{}
-	channel := make(chan ComparedMatchedGames, len(friendList.Friends))
+	type job struct {
+		friend Friend
+		idx    int
+	}
 
-	for _, friend := range friendList.Friends {
-		waitgGroup.Add(1)
+	friendCount := len(friendList.Friends)
+	if friendCount == 0 {
+		RespondWithJSON(w, http.StatusOK, struct {
+			Ranking []ComparedMatchedGames `json:"ranking"`
+		}{Ranking: []ComparedMatchedGames{}})
+		return
+	}
 
-		go func(friend Friend, channel chan ComparedMatchedGames) {
-			defer waitgGroup.Done()
+	var waitTime int
+	if friendCount > 100 {
+		waitTime = 10
+	} else if friendCount > 50 {
+		waitTime = 5
+	} else {
+		waitTime = 2
+	}
 
-			friendGames, err := apicfg.GetOwnedGames(friend.SteamID)
+	// Use a worker pool (currently 1 worker) to make all API calls over an interval
+	// that is determined by how many friends a user has, this is to help prevent 429 errors from Steam's end
+	jobs := make(chan job, friendCount)
+	results := make([]ComparedMatchedGames, friendCount)
+	waitGroup := sync.WaitGroup{}
+
+	interval := time.Duration(float64(waitTime) / float64(friendCount) * float64(time.Second))
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	worker := func() {
+		for i := range jobs {
+			<-ticker.C
+			friendGames, err := apicfg.GetOwnedGames(i.friend.SteamID)
 			if err != nil {
-				log.Printf("Error getting games for %s: %v", friend.SteamID, err)
-				return
+				log.Printf("Error getting games for %s: %v", i.friend.SteamID, err)
+				waitGroup.Done()
+				continue
 			}
-
 			result := ownedGames.CompareOwnedGames(friendGames, listGames)
-
-			channel <- result
-		}(friend, channel)
+			results[i.idx] = result
+			waitGroup.Done()
+		}
 	}
 
-	waitgGroup.Wait()
+	go worker()
 
-	results := []ComparedMatchedGames{}
-	for range len(friendList.Friends) {
-		result := <-channel
-		results = append(results, result)
+	// Queue up jobs
+	for idx, friend := range friendList.Friends {
+		waitGroup.Add(1)
+		jobs <- job{friend: friend, idx: idx}
 	}
+	close(jobs)
+	waitGroup.Wait()
 
 	// Sort results by player's score in descending order
 	sort.Slice(results, func(i, j int) bool {

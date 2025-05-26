@@ -56,7 +56,7 @@ func run() error {
 			},
 			FriendListCache: api.Cache[api.FriendList]{
 				Cache:     map[string]api.CachedData[api.FriendList]{},
-				RenewTime: 10 * time.Minute,
+				RenewTime: 60 * time.Minute,
 			},
 			OwnedGamesCache: api.Cache[api.OwnedGames]{
 				Cache:     map[string]api.CachedData[api.OwnedGames]{},

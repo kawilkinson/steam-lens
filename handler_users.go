@@ -26,7 +26,7 @@ func (cfg *config) handlerUserCreate(w http.ResponseWriter, req *http.Request) {
 		Password string `json:"password"`
 	}
 	type response struct {
-		User
+		User `json:"user"`
 	}
 
 	decoder := json.NewDecoder(req.Body)
@@ -52,7 +52,7 @@ func (cfg *config) handlerUserCreate(w http.ResponseWriter, req *http.Request) {
 		SteamID:        params.SteamID,
 	})
 	if err != nil {
-		api.RespondWithError(w, http.StatusInternalServerError, "Couldn't create user", err)
+		api.RespondWithError(w, http.StatusInternalServerError, "User already exists", err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (cfg *config) handlerLogin(w http.ResponseWriter, req *http.Request) {
 		Password string `json:"password"`
 	}
 	type response struct {
-		User
+		User         `json:"user"`
 		Token        string `json:"token"`
 		RefreshToken string `json:"refresh_token"`
 	}
@@ -128,6 +128,26 @@ func (cfg *config) handlerLogin(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// Set HttpOnly cookies for both tokens
+	http.SetCookie(w, &http.Cookie{
+		Name:     "JWT_token", // JWT access token
+		Value:    accessToken,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // false for now since I'm working in just a dev environment
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(time.Hour),
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token", // refresh token
+		Value:    refreshToken,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // false for now since I'm working in just a dev environment
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(15 * 24 * time.Hour),
+	})
+
 	api.RespondWithJSON(w, http.StatusOK, response{
 		User: User{
 			ID:        user.ID,
@@ -136,7 +156,7 @@ func (cfg *config) handlerLogin(w http.ResponseWriter, req *http.Request) {
 			Username:  user.Username,
 			SteamID:   user.SteamID,
 		},
-		Token:        accessToken,
-		RefreshToken: refreshToken,
+		Token:        accessToken,  // remove this when ran in a prod environment
+		RefreshToken: refreshToken, // remove too
 	})
 }
