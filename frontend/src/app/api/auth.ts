@@ -34,7 +34,29 @@ export async function login(email: string, password: string) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: email, password }),
-    //   credentials: "include", (commenting this out for now, but will be used in prod for HttpOnly cookies)
+      credentials: "include",
+    });
+
+    if (resp.status >= 400) {
+      const data = await resp.json();
+      throw new Error(data.error || `Failed with status ${resp.status}`);
+    }
+    return await resp.json();
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function logout() {
+  if (!backendURL) {
+    throw new Error("Backend base URL not set up in environment variables")
+  }
+  const url = new URL("users/logout", backendURL)
+
+  try {
+    const resp = await fetch(url.toString(), {
+      method: "POST",
+      credentials: "include",
     });
 
     if (resp.status >= 400) {

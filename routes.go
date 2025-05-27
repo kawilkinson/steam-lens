@@ -13,6 +13,8 @@ func (cfg *config) routesV1() http.Handler {
 	router.Post("/users/create", cfg.handlerUserCreate)
 	router.Post("/users/login", cfg.handlerLogin)
 	router.Post("/users/delete", cfg.handlerDeleteAllUsers)
+	router.With(cfg.AuthMiddleware).Post("/users/logout", cfg.handlerLogout)
+	router.With(cfg.AuthMiddleware).Get("/users/me", cfg.handlerGetMe)
 
 	return router
 }

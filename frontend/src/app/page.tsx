@@ -4,16 +4,43 @@ import { useState } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import AuthModal from "./components/AuthModal/AuthModal";
+import { logout } from "./api/auth";
+import { useAuth } from "./context/AuthContext"
 
 export default function Home() {
-  const [userID, setUserID] = useState<string>("");
+  const [userID, setUserID] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { auth, setAuth, checkAuth } = useAuth();
   const router = useRouter();
 
+  function handleLoginSuccess(steamID: string) {
+    checkAuth();
+    setShowLogin(false);
+    setShowSignup(false);
+    router.push(`/${steamID}`)
+  }
+
+  function handleLogout() {
+    setLoading(true);
+    logout().finally(() => {
+      setAuth({ loggedIn: false, steamID: null });
+      setLoading(false);
+      router.push("/");
+    });
+  }
+
+  const handleViewStats = () => {
+    if (auth.steamID) {
+      setLoading(true);
+      router.push(`/${auth.steamID}`);
+    }
+  }
+
   // Allows for an optional Steam Community profile URL that contains the Steam ID to be submitted instead
-  function handleClick() {
+  function handleSteamIDSubmit() {
     let destination = userID;
     const match = userID.match(/https:\/\/steamcommunity\.com\/profiles\/(\d+)/);
     if (match !== null) {
@@ -28,16 +55,25 @@ export default function Home() {
       <header className={styles.header}>
         <h1 className={styles.logoTitle}>Steam Lens</h1>
         <div>
-          <button className={styles.formButton} onClick={() => setShowLogin(true)}>Log In</button>
-          <button className={styles.formButton} onClick={() => setShowSignup(true)} style={{marginLeft: 12}}>Create Account</button>
+          {auth.loggedIn ? (
+          <>
+            <button className={styles.formButton} onClick={handleViewStats}>View Stats</button>
+            <button className={styles.formButton} onClick={handleLogout} style={{ marginLeft: 12 }}>Log Out</button>
+          </>
+          ) : (
+            <>
+              <button className={styles.formButton} onClick={() => setShowLogin(true)}>Log In</button>
+              <button className={styles.formButton} onClick={() => setShowSignup(true)} style={{marginLeft: 12}}>Create Account</button>
+            </>
+          )}
         </div>
       </header>
 
       {showLogin && (
-        <AuthModal type="login" onClose={() => setShowLogin(false)} setLoading={setLoading} />
+        <AuthModal type="login" onClose={() => setShowLogin(false)} setLoading={setLoading} onSuccess={handleLoginSuccess} />
       )}
       {showSignup && (
-        <AuthModal type="signup" onClose={() => setShowSignup(false)} setLoading={setLoading} />
+        <AuthModal type="signup" onClose={() => setShowSignup(false)} setLoading={setLoading} onSuccess={handleLoginSuccess} />
       )}
 
       {loading && (
@@ -54,7 +90,7 @@ export default function Home() {
           <div className={styles.form}>
             <label htmlFor="userID">Steam ID:</label>
             <input name="userID" type="text" required value={userID} onChange={(val) => setUserID(val.target.value)} />
-            <button type="submit" onClick={handleClick}>Submit</button>
+            <button type="submit" onClick={handleSteamIDSubmit}>Submit</button>
           </div>
         </div>
         <div className={styles.section}>
@@ -101,7 +137,7 @@ export default function Home() {
           </p>
           <p>
             On top of this, I have also added a wait time for stats to load depending on how many friends a user has. For example if a user has over 100 friends
-            then it will take 10 seconds to load bare minimum, if more than 50 friends but less than 100 it will take 5 seconds to load bare minimum, and if less than 50 friends it will take 2 seconds to load bare minimum. 
+            then it will take 10 seconds to load bare minimum, if more than 50 friends but less than 100 it will take at least 5 seconds, and if less than 50 friends it will take 2 seconds. 
             This is to help prevent &quot;too many request&quot; errors from Steam&apos;s API.
           </p>
         </div>

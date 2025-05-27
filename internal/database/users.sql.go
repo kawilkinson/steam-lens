@@ -46,13 +46,31 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 }
 
 const deleteUsers = `-- name: DeleteUsers :exec
-
 DELETE FROM users
 `
 
 func (q *Queries) DeleteUsers(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, deleteUsers)
 	return err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+
+SELECT id, created_at, updated_at, username, hashed_password, steam_id FROM users WHERE id = $1
+`
+
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Username,
+		&i.HashedPassword,
+		&i.SteamID,
+	)
+	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one

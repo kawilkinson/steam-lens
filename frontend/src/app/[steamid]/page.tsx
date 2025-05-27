@@ -3,7 +3,7 @@ import ProfileCard from "../components/ProfileCard/ProfileCard";
 import { getPlayerSummaries } from "../api/api";
 import FriendsList from "../components/FriendsList/FriendsList";
 import { PlayerSummary } from "../definitions/types";
-import Link from "next/link";
+import MainHeader from "../components/Header/MainHeader";
 
 export default async function GamesPage({ params }: { params: { steamid: string } }) {
     const steamID = (await params).steamid;
@@ -17,10 +17,7 @@ export default async function GamesPage({ params }: { params: { steamid: string 
 
     return (
     <>
-        <header className={styles.header}>
-        <h1 className={styles.logoTitle}>Steam Lens</h1>
-        <Link href="/" className={styles.homeButton}>Home</Link>
-        </header>
+        <MainHeader />
         <main className={styles.main}>
         {summary != null ?
             <>
@@ -32,7 +29,6 @@ export default async function GamesPage({ params }: { params: { steamid: string 
             <p className={styles.error}>Invalid id {steamID}</p>
         }
         </main>
-
     </>
     );
 }

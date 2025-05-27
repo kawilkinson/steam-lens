@@ -7,9 +7,10 @@ interface AuthModalProps {
   type: "signup" | "login";
   onClose: () => void;
   setLoading: (val: boolean) => void;
+  onSuccess: (steamID: string) => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, setLoading }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, onSuccess, setLoading }) => {
   const [fields, setFields] = useState({ username: "", password: "", steam_id: "" });
   const [error, setError] = useState("");
   const router = useRouter();
@@ -20,7 +21,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, setLoading }) => {
   const handleSubmit = async (err: React.FormEvent) => {
   err.preventDefault();
   setError("");
-  setLoading(true);
   try {
       let data;
       if (type === "signup") {
@@ -31,18 +31,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, setLoading }) => {
 
       const steamID = data.user?.steam_id;
       if (steamID) {
+        setLoading(true);
+        onSuccess(steamID);
         onClose();
         router.push(`/${steamID}`);
       } else {
+        setLoading(false);
         setError("Missing Steam ID in server response.");
       }
   } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
+    setLoading(false);
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError("An unknown error occurred");
     }
+  }
   };
 
   return (
