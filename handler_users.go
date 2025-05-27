@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Khazz0r/steam-lens/internal/api"
@@ -128,22 +129,25 @@ func (cfg *config) handlerLogin(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// get platform to determine if dev or prod, if dev make devPlatform false for secure cookies
+	devPlatform := os.Getenv("PLATFORM") != "dev"
+
 	// Set HttpOnly cookies for both tokens
 	http.SetCookie(w, &http.Cookie{
-		Name:     "JWT_token", // JWT access token
+		Name:     "JWT_token",
 		Value:    accessToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   false, // false for now since I'm working in just a dev environment
+		Secure:   devPlatform,
 		SameSite: http.SameSiteLaxMode,
 		Expires:  time.Now().Add(time.Hour),
 	})
 	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token", // refresh token
+		Name:     "refresh_token",
 		Value:    refreshToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   false, // false for now since I'm working in just a dev environment
+		Secure:   devPlatform,
 		SameSite: http.SameSiteLaxMode,
 		Expires:  time.Now().Add(15 * 24 * time.Hour),
 	})
@@ -158,5 +162,79 @@ func (cfg *config) handlerLogin(w http.ResponseWriter, req *http.Request) {
 		},
 		Token:        accessToken,  // remove this when ran in a prod environment
 		RefreshToken: refreshToken, // remove too
+	})
+}
+
+func (cfg *config) handlerLogout(w http.ResponseWriter, req *http.Request) {
+	// get platform to determine if dev or prod, if dev make devPlatform false for secure cookies
+	devPlatform := os.Getenv("PLATFORM") != "dev"
+
+	refreshCookie, err := req.Cookie("refresh_token")
+	if err != nil {
+		api.RespondWithError(w, http.StatusBadRequest, "Unable to retrieve refresh_token from request", err)
+		return
+	}
+	if refreshCookie.Value == "" {
+		api.RespondWithError(w, http.StatusBadRequest, "refresh_token provided is not valid, please try logging out again", err)
+		return
+	}
+
+	err = cfg.db.DeleteRefreshToken(req.Context(), refreshCookie.Value)
+	if err != nil {
+		api.RespondWithError(w, http.StatusInternalServerError, "Unable to delete refresh token from database", err)
+		return
+	}
+
+	// Invalidate both JWT token and refresh token cookies for logging out
+	http.SetCookie(w, &http.Cookie{
+		Name:     "JWT_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   devPlatform,
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(-1 * time.Hour),
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   devPlatform,
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(-1 * time.Hour),
+	})
+
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte(`{"message": "Successfully logged out"}`))
+	if err != nil {
+		api.RespondWithError(w, http.StatusInternalServerError, "Unable to write out logout message", err)
+		return
+	}
+}
+
+func (cfg *config) handlerGetMe(w http.ResponseWriter, req *http.Request) {
+	type response struct {
+		User `json:"user"`
+	}
+
+	userID, exists := req.Context().Value(userIDContextKey).(uuid.UUID)
+	if !exists || userID == uuid.Nil {
+		api.RespondWithError(w, http.StatusUnauthorized, "Not authorized to perform this action", nil)
+		return
+	}
+
+	user, err := cfg.db.GetUserByID(req.Context(), userID)
+	if err != nil {
+		api.RespondWithError(w, http.StatusNotFound, "Could not find user by that ID", err)
+		return
+	}
+
+	api.RespondWithJSON(w, http.StatusOK, response{
+		User: User{
+			ID:       user.ID,
+			Username: user.Username,
+			SteamID:  user.SteamID,
+		},
 	})
 }

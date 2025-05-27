@@ -65,6 +65,31 @@
   transition: border 0.2s, box-shadow 0.2s;
 }
 
+.formButton {
+  background: linear-gradient(90deg, var(--accent-light-rgb) 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 8px 20px;
+  box-shadow: 0 2px 8px 0 #10181e33;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+  margin-left: 12px;
+}
+
+.formButton:first-child {
+  margin-left: 0;
+}
+
+.formButton:hover {
+  background: linear-gradient(90deg, var(--accent-200) 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  transform: translateY(-1px) scale(1.03);
+  opacity: 1;
+}
+
 .form button {
   background: linear-gradient(90deg, var(--accent-light-rgb) 20%, var(--steam-light-blue) 80%);
   color: #10181e;

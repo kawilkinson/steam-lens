@@ -10,7 +10,12 @@ VALUES (
 )
 RETURNING *;
 
--- #nosec G101 -- false positive, token is a SQL placeholder
+-- #nosec G101 -- false positive
+-- name: DeleteRefreshToken :exec
+DELETE FROM refresh_tokens
+WHERE token = $1;
+
+-- #nosec G101 -- false positive
 -- name: GetUserFromRefreshToken :one
 SELECT users.* FROM users
 JOIN refresh_tokens ON users.id = refresh_tokens.user_id
