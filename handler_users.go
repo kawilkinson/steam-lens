@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Khazz0r/steam-lens/internal/api"
@@ -237,4 +238,72 @@ func (cfg *config) handlerGetMe(w http.ResponseWriter, req *http.Request) {
 			SteamID:  user.SteamID,
 		},
 	})
+}
+
+type updateUserParams struct {
+	Username *string `json:"username"`
+	Password *string `json:"password"`
+	SteamID  *string `json:"steam_id"`
+}
+
+// Helper function to safely dereference a string pointer that could be empty
+func deref(ptr *string) string {
+	if ptr != nil {
+		return *ptr
+	}
+	return ""
+}
+
+func (cfg *config) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
+	userID, exists := req.Context().Value(userIDContextKey).(uuid.UUID)
+	if !exists || userID == uuid.Nil {
+		api.RespondWithError(w, http.StatusUnauthorized, "You are not authorized to update this account", nil)
+		return
+	}
+
+	decoder := json.NewDecoder(req.Body)
+
+	params := updateUserParams{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		api.RespondWithError(w, http.StatusInternalServerError, "Unable to decode request body", err)
+		return
+	}
+
+	var usernamePtr *string
+	var hashedPasswordPtr *string
+	var steamIDPtr *string
+
+	if params.Username != nil && strings.TrimSpace(*params.Username) != "" {
+		usernamePtr = params.Username
+	}
+
+	if params.Password != nil && strings.TrimSpace(*params.Password) != "" {
+		hash, err := auth.HashPassword(*params.Password)
+		if err != nil {
+			api.RespondWithError(w, http.StatusBadRequest, "Unable to hash password", err)
+			return
+		}
+		hashedPasswordPtr = &hash
+	}
+
+	if params.SteamID != nil && strings.TrimSpace(*params.SteamID) != "" {
+		steamIDPtr = params.SteamID
+	}
+
+	err = cfg.db.UpdateUser(req.Context(), database.UpdateUserParams{
+		ID:        userID,
+		Column1:   deref(usernamePtr),
+		Column2:   deref(hashedPasswordPtr),
+		Column3:   deref(steamIDPtr),
+		UpdatedAt: time.Now().UTC(),
+	})
+	if err != nil {
+		api.RespondWithError(w, http.StatusInternalServerError, "Failed to update user with provided fields, duplicate username found", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message":"updated"}`))
 }

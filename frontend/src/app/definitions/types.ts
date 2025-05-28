@@ -39,3 +39,9 @@ export interface AchievementComparisonData {
 	player: PlayerAchievements;
 	friend: PlayerAchievements;
 }
+
+export type EditAccountPayload = {
+  username?: string;
+  password?: string;
+  steam_id?: string;
+};

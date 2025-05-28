@@ -58,6 +58,7 @@ export default function Home() {
           {auth.loggedIn ? (
           <>
             <button className={styles.formButton} onClick={handleViewStats}>View Stats</button>
+            <button className={styles.formButton} onClick={() => router.push("/edit-account")} style={{ marginLeft: 12 }}>Edit Account</button>
             <button className={styles.formButton} onClick={handleLogout} style={{ marginLeft: 12 }}>Log Out</button>
           </>
           ) : (
@@ -137,7 +138,7 @@ export default function Home() {
           </p>
           <p>
             On top of this, I have also added a wait time for stats to load depending on how many friends a user has. For example if a user has over 100 friends
-            then it will take 10 seconds to load bare minimum, if more than 50 friends but less than 100 it will take at least 5 seconds, and if less than 50 friends it will take 2 seconds. 
+            then it will take 15 seconds to load bare minimum, if more than 50 friends but less than 100 it will take at least 8 seconds, and if less than 50 friends it will take 4 seconds. 
             This is to help prevent &quot;too many request&quot; errors from Steam&apos;s API.
           </p>
         </div>

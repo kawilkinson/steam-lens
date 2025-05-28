@@ -195,6 +195,13 @@
   opacity: 1;
 }
 
+.modalSuccess {
+  margin: 10px 0 20px 0;
+  color: #1f9600;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
 .modalError {
   color: #ff5c5c;
   font-size: 1rem;
@@ -251,9 +258,11 @@
   gap: 16px;
   opacity: 0.98;
 }
+
 @keyframes loadingSpin {
   100% { transform: rotate(360deg); }
 }
+
 .loadingSpinner {
   width: 28px;
   height: 28px;

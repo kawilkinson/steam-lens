@@ -1,4 +1,5 @@
 import { backendURL } from "../definitions/urls";
+import { EditAccountPayload } from "../definitions/types";
 
 export async function createAccount(email: string, password: string, steamID: string) {
   if (!backendURL) {
@@ -62,6 +63,52 @@ export async function logout() {
     if (resp.status >= 400) {
       const data = await resp.json();
       throw new Error(data.error || `Failed with status ${resp.status}`);
+    }
+    return await resp.json();
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function editAccount(payload: EditAccountPayload) {
+  if (!backendURL) {
+    throw new Error("Backend base URL not set up in environment variables");
+  }
+  const url = new URL("users/me", backendURL);
+
+  try {
+    const resp = await fetch(url.toString(), {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (resp.status >= 400) {
+      let data: { error?: string } = {};
+      try { data = await resp.json(); } catch {}
+      throw new Error(data.error || `Failed with status ${resp.status}`);
+    }
+    return await resp.json();
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function fetchCurrentUser() {
+  if (!backendURL) {
+    throw new Error("Backend base URL not set up in environment variables")
+  }
+  const url = new URL("users/me", backendURL)
+
+  try {
+    const resp = await fetch(url.toString(), {
+      method: "GET",
+      credentials: "include",
+    });
+    if (resp.status >= 400) {
+      const data = await resp.json()
+      throw new Error(data.error || `Failed with Status ${resp.status}`);
     }
     return await resp.json();
   } catch (err) {
