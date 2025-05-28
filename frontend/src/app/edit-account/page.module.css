@@ -1,0 +1,27 @@
+.formContainer {
+  width: 100%;
+  background: #23272e;
+  border-radius: 14px;
+  padding: 28px 32px 20px 32px;
+  box-shadow: 0 2px 10px rgba(40,70,110,0.10);
+  margin-top: 16px;
+}
+
+.formButton.cancel {
+  background: #7a7a7a;
+  color: #fff;
+  margin-left: 8px;
+}
+
+.modalSuccess {
+  margin: 10px 0 20px 0;
+  color: #1f9600;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .formContainer {
+    padding: 16px 8px 12px 8px;
+  }
+}

@@ -16,6 +16,17 @@ SELECT * FROM users WHERE username = $1;
 
 -- name: GetUserByID :one
 SELECT * FROM users WHERE id = $1;
+--
+
+-- name: UpdateUser :exec
+UPDATE users
+SET
+    username = COALESCE(NULLIF($1::text, ''), username),
+    hashed_password = COALESCE(NULLIF($2::text, ''), hashed_password),
+    steam_id = COALESCE(NULLIF($3::text, ''), steam_id),
+    updated_at = $4
+WHERE id = $5;
+--
 
 -- name: DeleteUsers :exec
 DELETE FROM users;
