@@ -305,5 +305,9 @@ func (cfg *config) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"updated"}`))
+	_, err = w.Write([]byte(`{"message":"updated"}`))
+	if err != nil {
+		api.RespondWithError(w, http.StatusInternalServerError, "Failed to write reply", err)
+		return
+	}
 }
