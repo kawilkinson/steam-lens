@@ -11,16 +11,21 @@ export default function Home() {
   const [userID, setUserID] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [showSignupSuccess, setShowSignupSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { auth, setAuth, checkAuth } = useAuth();
   const router = useRouter();
 
-  function handleLoginSuccess(steamID: string) {
+  function handleLoginSuccess() {
     checkAuth();
     setShowLogin(false);
     setShowSignup(false);
-    router.push(`/${steamID}`)
+  }
+
+  function handleSignupSuccess() {
+    setShowSignupSuccess(true);
+    setTimeout(() => setShowSignupSuccess(false), 5000)
   }
 
   function handleLogout() {
@@ -71,10 +76,10 @@ export default function Home() {
       </header>
 
       {showLogin && (
-        <AuthModal type="login" onClose={() => setShowLogin(false)} setLoading={setLoading} onSuccess={handleLoginSuccess} />
+        <AuthModal type="login" onClose={() => setShowLogin(false)} onSuccess={handleLoginSuccess} />
       )}
       {showSignup && (
-        <AuthModal type="signup" onClose={() => setShowSignup(false)} setLoading={setLoading} onSuccess={handleLoginSuccess} />
+        <AuthModal type="signup" onClose={() => setShowSignup(false)} onSuccess={handleSignupSuccess} />
       )}
 
       {loading && (
@@ -83,6 +88,12 @@ export default function Home() {
             <div className={styles.loadingSpinner}></div>
             Loading stats&hellip;
           </div>
+        </div>
+      )}
+
+      {showSignupSuccess && (
+        <div className={styles.signupSuccessPopup}>
+          Account created successfully
         </div>
       )}
 
@@ -138,7 +149,7 @@ export default function Home() {
           </p>
           <p>
             On top of this, I have also added a wait time for stats to load depending on how many friends a user has. For example if a user has over 100 friends
-            then it will take 15 seconds to load bare minimum, if more than 50 friends but less than 100 it will take at least 8 seconds, and if less than 50 friends it will take 4 seconds. 
+            then it will take 20 seconds to load bare minimum, if more than 50 friends but less than 100 it will take at least 10 seconds, and if less than 50 friends it will take 5 seconds. 
             This is to help prevent &quot;too many request&quot; errors from Steam&apos;s API.
           </p>
         </div>

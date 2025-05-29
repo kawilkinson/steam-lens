@@ -13,6 +13,11 @@
   margin-left: 8px;
 }
 
+.h2 {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
 .modalSuccess {
   margin: 10px 0 20px 0;
   color: #1f9600;
@@ -24,4 +29,9 @@
   .formContainer {
     padding: 16px 8px 12px 8px;
   }
+}
+
+.fieldlabel {
+  font-weight: bold;
+  font-size: 1.1rem;
 }

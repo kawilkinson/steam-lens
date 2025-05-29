@@ -171,11 +171,11 @@ func (apicfg *ApiConfig) HandlerMatchedGamesRanking(w http.ResponseWriter, req *
 
 	var waitTime int
 	if friendCount > 100 {
-		waitTime = 15
+		waitTime = 20
 	} else if friendCount > 50 {
-		waitTime = 8
+		waitTime = 10
 	} else {
-		waitTime = 4
+		waitTime = 5
 	}
 
 	// Use a worker pool (currently 1 worker) to make all API calls over an interval

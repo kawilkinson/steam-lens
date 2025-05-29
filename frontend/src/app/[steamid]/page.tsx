@@ -22,7 +22,7 @@ export default async function GamesPage({ params }: { params: { steamid: string 
         {summary != null ?
             <>
             <p className={styles.title}>User</p>
-            <ProfileCard summary={summary!} games={null} numOfRanks={0} userID={steamID} />
+            <ProfileCard summary={summary!} games={null} numOfRanks={0} userID={steamID} isUserProfile={true} />
             <FriendsList steamid={steamID} />
             </>
             :
