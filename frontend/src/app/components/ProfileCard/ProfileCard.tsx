@@ -7,11 +7,12 @@ import { MouseEvent, useState } from "react";
 import GamesList from "./GamesList/GamesList";
 import Rankings from "./Rankings/Rankings";
 
-export default function ProfileCard({ summary, games, numOfRanks, userID }: {
+export default function ProfileCard({ summary, games, numOfRanks, userID, isUserProfile = false }: {
   summary: PlayerSummary,
   games: MatchingGames | null,
   numOfRanks: number,
   userID: string
+  isUserProfile: boolean,
 }) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [listType, setListType] = useState<"matching" | "missing" | "achievements">("matching");
@@ -63,9 +64,9 @@ export default function ProfileCard({ summary, games, numOfRanks, userID }: {
           />
           <p className={styles.personaname}>{summary.personaName}</p>
         </div>
-          {games == null || games.friendGamesCount == 0 ? <></>
-          :
-          <Rankings rankings={games} numOfRanks={numOfRanks}/>}
+        {!isUserProfile && (
+          <Rankings rankings={games} numOfRanks={numOfRanks}/>
+        )}
         </div>
       {expanded && games &&
         <GamesList

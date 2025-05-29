@@ -1,19 +1,16 @@
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import styles from "../../page.module.css"
 import { createAccount, login } from "../../api/auth";
 
 interface AuthModalProps {
   type: "signup" | "login";
   onClose: () => void;
-  setLoading: (val: boolean) => void;
   onSuccess: (steamID: string) => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, onSuccess, setLoading }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, onSuccess }) => {
   const [fields, setFields] = useState({ username: "", password: "", steam_id: "" });
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleChange = (err: React.ChangeEvent<HTMLInputElement>) =>
   setFields({ ...fields, [err.target.name]: err.target.value });
@@ -31,16 +28,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ type, onClose, onSuccess, setLoad
 
       const steamID = data.user?.steam_id;
       if (steamID) {
-        setLoading(true);
         onSuccess(steamID);
         onClose();
-        router.push(`/${steamID}`);
       } else {
-        setLoading(false);
         setError("Missing Steam ID in server response.");
       }
   } catch (err) {
-    setLoading(false);
     if (err instanceof Error) {
       setError(err.message);
     } else {

@@ -8,7 +8,20 @@ function getRankColor(rank: number, maxRank: number): string {
   return `hsl(${hue}, 100%, 40%)`;
 }
 
-export default function Rankings({ rankings, numOfRanks }: { rankings: MatchingGames, numOfRanks: number }) {
+export default function Rankings({ rankings, numOfRanks }: { rankings: MatchingGames | null | undefined, numOfRanks: number }) {
+  const isPrivate = !rankings || !rankings.friendGamesCount
+
+  if (isPrivate) {
+    return (
+      <div className={styles.container}>
+        <p className={styles.percentageOwned}></p>
+        <p>
+          <span className={styles.privateProfile}>Private Profile</span>
+        </p>
+      </div>
+    )
+  }
+
   const percentageOwned = rankings.friendPercentage;
   const rankColor = getRankColor(rankings.ranking, numOfRanks)
 

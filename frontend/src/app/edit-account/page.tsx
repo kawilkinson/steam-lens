@@ -102,12 +102,10 @@ export default function EditAccountPage() {
         <h1 className={styles.logoTitle}>Steam Lens</h1>
       </header>
       <main className={styles.main} style={{ marginLeft: 20}}>
-        <h2 style={{ marginBottom: 16 }}>Edit Account</h2>
-        {error && <div className={styles.modalError}>{error}</div>}
-        {success && <div className={styles.modalSuccess}>{success}</div>}
+        <h2 className={editStyles.h2} style={{ marginBottom: 16 }}>Edit Account</h2>
         <form onSubmit={handleSubmit} style={{ maxWidth: 400, width: "100%" }}>
           <label style={{ display: "block", marginBottom: 10 }}>
-            Email:
+            <h3 className={editStyles.fieldlabel}>Email:</h3>
             <input
               className={styles.modalInput}
               type="email"
@@ -119,7 +117,7 @@ export default function EditAccountPage() {
             />
           </label>
           <label style={{ display: "block", marginBottom: 10 }}>
-            New Password:
+            <h3 className={editStyles.fieldlabel}>Password:</h3>
             <input
               className={styles.modalInput}
               type="password"
@@ -131,7 +129,7 @@ export default function EditAccountPage() {
             />
           </label>
           <label style={{ display: "block", marginBottom: 16 }}>
-            Steam ID:
+            <h3 className={editStyles.fieldlabel}>Steam ID:</h3>
             <input
               className={styles.modalInput}
               type="text"
@@ -154,6 +152,8 @@ export default function EditAccountPage() {
                 Cancel
                 </button>
             </div>
+            {error && <div className={styles.modalError} style={{ marginTop: 20}}>{error}</div>}
+            {success && <div className={styles.modalSuccess} style={{ marginTop: 20}}>{success}</div>}
         </form>
       </main>
     </>
