@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:17.5
+    restart: always
+    environment:
+      POSTGRES_USER: steam_lens
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: steam_lens_db
+    volumes:
+      - psqldata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: steam_lens
+      DB_PASSWORD: password
+      DB_NAME: steam_lens_db
+      PLATFORM: dev
+      STEAM_API_KEY: test
+      JWTSECRET: test
+      PORT: 8080
+      DATABASE_URL: postgres://steam_lens:password@db:5432/steam_lens_db?sslmode=disable
+    ports:
+      - "8080:8080"
+    command: ["/app/start.sh"]
+    
+  migrate:
+    image: golang:1.24.3
+    restart: no
+    depends_on:
+      - db
+    volumes:
+      - ./migrations:/migrations
+    working_dir: /migrations
+    entrypoint: >
+      sh -c "
+        apt-get update &&
+        apt-get install -y --no-install-recommends postgresql-client &&
+        go install github.com/pressly/goose/v3/cmd/goose@latest &&
+        until pg_isready -h db -U steam_lens; do sleep 2; done &&
+        goose -dir /migrations postgres 'postgres://steam_lens:password@db:5432/steam_lens_db?sslmode=disable' up
+      "
+
+volumes:
+  psqldata:
