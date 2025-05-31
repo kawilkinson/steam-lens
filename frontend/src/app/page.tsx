@@ -12,6 +12,7 @@ export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [showSignupSuccess, setShowSignupSuccess] = useState(false);
+  const [showLoginSuccess, setShowLoginSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { auth, setAuth, checkAuth } = useAuth();
@@ -21,6 +22,8 @@ export default function Home() {
     checkAuth();
     setShowLogin(false);
     setShowSignup(false);
+    setShowLoginSuccess(true);
+    setTimeout(() => setShowLoginSuccess(false), 5000)
   }
 
   function handleSignupSuccess() {
@@ -94,6 +97,12 @@ export default function Home() {
       {showSignupSuccess && (
         <div className={styles.signupSuccessPopup}>
           Account created successfully
+        </div>
+      )}
+
+      {showLoginSuccess && (
+        <div className={styles.loginSuccessPopup}>
+          Successfully logged in
         </div>
       )}
 
