@@ -7,7 +7,7 @@ until pg_isready -h "$DB_HOST" -U "$DB_USER"; do
 done
 
 echo "Running goose migrations..."
-goose -dir /app/migrations "$DATABASE_URL" up
+goose -dir /app/migrations postgres "$DATABASE_URL" up
 
 echo "Starting server..."
 exec /app/server

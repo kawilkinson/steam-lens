@@ -5,8 +5,10 @@ import FriendsList from "../components/FriendsList/FriendsList";
 import { PlayerSummary } from "../definitions/types";
 import MainHeader from "../components/Header/MainHeader";
 
-export default async function GamesPage({ params }: { params: { steamid: string } }) {
-    const steamID = (await params).steamid;
+type Params = Promise<{steamid: string}>
+
+export default async function GamesPage({ params }: { params: Params }) {
+  const steamID = (await params).steamid;
 
     const resp = await getPlayerSummaries(steamID);
 

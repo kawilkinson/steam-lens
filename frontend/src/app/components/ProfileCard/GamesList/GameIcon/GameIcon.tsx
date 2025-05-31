@@ -20,7 +20,8 @@ export default function GameIcon({ game, width, height }: { game: Game, width: n
         src="/no_game_icon.png"
         width={width} height={height}
         blurDataURL={blurDataURL}
-        placeholder="blur" />
+        placeholder="blur" 
+        />
       :
       <Image
         className={styles.icon}
