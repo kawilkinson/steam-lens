@@ -38,6 +38,7 @@ export default async function FriendsList( { steamid: steamID }: { steamid: stri
 							summary={summary}
 							numOfRanks={numOfRanks}
 							userID={steamID}
+							isUserProfile={false}
 							/>
 						</li>
 						);

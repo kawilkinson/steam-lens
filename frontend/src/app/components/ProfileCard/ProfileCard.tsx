@@ -61,6 +61,7 @@ export default function ProfileCard({ summary, games, numOfRanks, userID, isUser
             width={50}
             height={50}
             alt="Profile picture"
+            unoptimized={true}
           />
           <p className={styles.personaname}>{summary.personaName}</p>
         </div>
