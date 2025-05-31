@@ -288,6 +288,31 @@
   animation: fadeInOut 5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   border: none;
 }
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateY(24px);}
+  8%   { opacity: 1; transform: translateY(0);}
+  90%  { opacity: 1; transform: translateY(0);}
+  100% { opacity: 0; transform: translateY(18px);}
+}
+
+.loginSuccessPopup {
+  position: fixed;
+  z-index: 1201;
+  bottom: 42px; 
+  right: 42px; 
+  background: linear-gradient(90deg, #06ac38 20%, var(--steam-light-blue) 80%);
+  color: #10181e;
+  font-size: 1.08rem;
+  font-weight: 700;
+  padding: 16px 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px 0 #10181e33;
+  opacity: 0.98;
+  animation: fadeInOut 5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  border: none;
+}
+
 @keyframes fadeInOut {
   0%   { opacity: 0; transform: translateY(24px);}
   8%   { opacity: 1; transform: translateY(0);}

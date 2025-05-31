@@ -23,8 +23,5 @@ RUN chmod +x /app/start.sh
 
 ENV PORT=8080
 ENV PLATFORM="dev"
-ENV STEAM_API_KEY="test"
-ENV DATABASE_URL="postgres://steam_lens:password@db:5432/steam_lens_db?sslmode=disable"
-ENV JWTSECRET="test"
 
 CMD ["/app/start.sh"]
