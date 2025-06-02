@@ -23,6 +23,7 @@ services:
       DB_USER: steam_lens
       DB_PASSWORD: password
       DB_NAME: steam_lens_db
+      PLATFORM: dev
     ports:
       - "8080:8080"
     command: ["/app/start.sh"]

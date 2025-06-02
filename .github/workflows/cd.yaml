@@ -9,6 +9,17 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
 
+    env: 
+      STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+      ECR_REPO: ${{ secrets.ECR_REPO }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_SUBNET: ${{ secrets.DATABASE_SUBNET }}
+      DATABASE_SECURITY_GROUP: ${{ secrets.DATABASE_SECURITY_GROUP}}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      ECR_BACKEND: ${{ secrets.ECR_BACKEND }}
+      ECR_FRONTEND: ${{ secrets.ECR_FRONTEND }}
+      ECR_MIGRATE: ${{ secrets.ECR_MIGRATE }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -16,5 +27,42 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.24.1"
+          go-version: "1.24.3"
       
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsRole
+          aws-region: us-east-2
+
+      - name: Build and push backend
+        run: |
+          aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REPO
+          docker build -t $ECR_BACKEND:latest .
+          docker tag $ECR_REPO/$ECR_BACKEND:latest
+          docker push $ECR_REPO/$ECR_BACKEND:latest
+      
+      - name: Build and push frontend
+        run: |
+          docker build -t $ECR_FRONTEND:latest ./frontend
+          docker tag $ECR_REPO/$ECR_FRONTEND:latest
+          docker push $ECR_REPO/$ECR_FRONTEND:latest
+      
+      - name: Build and push migration
+        run: |
+          docker build -t $ECR_MIGRATE:latest ./sql/schema
+          docker tag $ECR_REPO/$ECR_MIGRATE:latest
+          docker push $ECR_REPO/$ECR_MIGRATE:latest
+      
+      - name: Deploy backend service
+        run: |
+          aws ecs update-service --cluster steam-lens-cluster --service Run-Backend --force-new-deployment
+      
+      - name: Deploy frontend service
+        run: |
+          aws ecs update-service --cluster steam-lens-cluster --service Run-Frontend --force-new-deployment
+
+      - name: Run migration
+        run: |
+          aws ecs run-task --cluster steam-lens-cluster --launch-type FARGATE \
+            --task-definition Run-Migration \
+            --network-configuration awsvpcConfiguration={subnets=[$DATABASE_SUBNET],securityGroups=[$DATABASE_SECURITY_GROUP],assignPublicIp=ENABLED}
