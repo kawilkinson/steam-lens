@@ -23,10 +23,10 @@ services:
       DB_USER: steam_lens
       DB_PASSWORD: password
       DB_NAME: steam_lens_db
-      PLATFORM: dev
+    env_file:
+      - .env
     ports:
       - "8080:8080"
-    command: ["/app/start.sh"]
     
   migrate:
     image: golang:1.24.3
@@ -36,14 +36,11 @@ services:
     volumes:
       - ./sql/schema:/migrations
     working_dir: /migrations
-    entrypoint: >
-      sh -c "
-        apt-get update &&
-        apt-get install -y --no-install-recommends postgresql-client &&
-        go install github.com/pressly/goose/v3/cmd/goose@latest &&
-        until pg_isready -h db -U steam_lens; do sleep 2; done &&
-        goose -dir /migrations postgres 'postgres://steam_lens:password@db:5432/steam_lens_db?sslmode=disable' up
-      "
+    build:
+      context: ./sql/schema
+      dockerfile: Dockerfile
+    env_file:
+      - .env
 
   frontend:
     depends_on:
@@ -53,8 +50,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      NODE_ENV: production
 
 volumes:
   psqldata:

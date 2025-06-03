@@ -21,10 +21,4 @@ COPY ./sql/schema /app/migrations
 COPY ./scripts/start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
-ENV STEAM_API_KEY="$STEAM_API_KEY"
-ENV DATABASE_URL="$DATABASE_URL"
-ENV PLATFORM="dev"
-ENV PORT="8080"
-ENV JWTSECRET="$JWT_SECRET"
-
 CMD ["/app/start.sh"]

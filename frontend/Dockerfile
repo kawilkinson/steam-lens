@@ -10,7 +10,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# Production image, copy only files needed for production
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -26,4 +25,4 @@ COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3000
 
-CMD ["next", "start"]
+CMD ["npm", "start"]
