@@ -10,6 +10,13 @@ The user's friends are ranked starting from rank 1 at the top, I have the rankin
 
 Generally, as long as a user or friend doesn't have their profile privated, you should be able to see all of the matching games of a user and their friend, the missing games, and a comparison of the number of achievements for each game that have been achieved.
 
+![steam-lens-homepage](https://github.com/user-attachments/assets/9e4cd143-cb8a-4754-9485-256e3edd1a5d)
+
+![steam-lens-games-page](https://github.com/user-attachments/assets/b1f7437c-7f90-4833-bc3c-133ea8c99091)
+
+![steam-lens-create-account](https://github.com/user-attachments/assets/bcd2d81b-d230-4e18-8229-a8ea144567fb)
+
+
 ## Project Layout
 
 Currently the project can be broken up into 3 parts; it has a frontend, a backend, and a PostgreSQL database. The backend is in the root of the project, the frontend is in the frontend directory, and the database schema is located in the sql/schema directory.
