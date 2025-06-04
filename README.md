@@ -12,6 +12,10 @@ Generally, as long as a user or friend doesn't have their profile privated, you 
 
 ![steam-lens-demo](https://github.com/user-attachments/assets/3f6d970a-cbe0-48fd-a8e8-43c79079664e)
 
+## Motivation
+
+Steam Lens provides a very quick way to run comparisons of Steam libraries, usually this is a more manual process through Steam but this website makes it quick and easy to have all of those comparisons with just a simple input of your own Steam ID or another user's! I wanted to practice CI/CD through a full stack website (you'll find the cd.yaml is commented out due to AWS no longer hosting this website), understand frontend development better through a framework, further master my backend development skills through security and RESTful API building, and also sharpen my database skills working with a PostgreSQL database. So I decided to build Steam-Lens to do this.
+
 ## Project Layout
 
 Currently the project can be broken up into 3 parts; it has a frontend, a backend, and a PostgreSQL database. The backend is in the root of the project, the frontend is in the frontend directory, and the database schema is located in the sql/schema directory.
