@@ -20,7 +20,7 @@ Steam Lens provides a very quick way to run comparisons of Steam libraries, usua
 
 Currently the project can be broken up into 3 parts; it has a frontend, a backend, and a PostgreSQL database. The backend is in the root of the project, the frontend is in the frontend directory, and the database schema is located in the sql/schema directory.
 
-## Installation / Setup
+## Installation / Quick Start
 
 1. After cloning the repository, the easiest way to get the entire website running is to download and install Docker Desktop from their official website [here](https://www.docker.com/products/docker-desktop/). This way you don't have to worry about downloading or installing anything extra, Docker containers will handle all the dependencies and requirements with a clean environment to ensure stability.
 
@@ -63,6 +63,12 @@ go run .
 # From a second terminal window in the frontend directory run this
 npm run dev
 ```
+
+## Usage
+
+Steam Lens primarily runs off of a Steam ID (here is one to use if you don't have one on hand: 76561197997096401). You can get the stats for a Steam ID by either inputting it in the field at the home page or you can take advantage of the database and create an account with the Steam ID, once logged into an account a handy "view stats" button will show on the home page, allowing you to view updated stats at a moments notice! There is also the ability to edit your account in case you want to change your username, password, or Steam ID. 
+
+On top of seeing comparisons, you can also click on any game in any of the lists to go directly to their Steam store page, this way if there's a game you're interested in it's just a click away from seeing where you can purchase it!
 
 ## Contribution
 If you have any ideas for this project whether it'd be new features, optimizations, etc. feel free to contribute! I'm always open to new ideas and improvements.
