@@ -70,5 +70,5 @@ Steam Lens primarily runs off of a Steam ID (here is one to use if you don't hav
 
 On top of seeing comparisons, you can also click on any game in any of the lists to go directly to their Steam store page, this way if there's a game you're interested in it's just a click away from seeing where you can purchase it!
 
-## Contribution
-If you have any ideas for this project whether it'd be new features, optimizations, etc. feel free to contribute! I'm always open to new ideas and improvements.
+## Contributing
+Contribute by forking the repository and opening a pull request to the `main` branch. If you have any ideas for this project whether it'd be new features, optimizations, etc. feel free to share them. I'm always open to new ideas and improvements.
