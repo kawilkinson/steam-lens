@@ -4,18 +4,13 @@
 
 ## What is Steam Lens?
 
-Steam Lens is a website that gives you the ability to compare a user's Steam library and achievements against their friends.
+Steam Lens is a website that gives you the ability to compare a user's Steam library and achievements against their friends at a moment's notice!
 
 The user's friends are ranked starting from rank 1 at the top, I have the ranking currently weighted slightly more towards the *number* of common games a friend has over their percentage of common games.
 
-Generally, as long as a user or friend doesn't have their profile privated, you should be able to see all of the matching games of a user and their friend, the missing games, and a comparison of the number of achievements for each game that have been achieved.
+Generally, as long as a user or friend doesn't have their profile privated, you should be able to see all of the matching games, the missing games, and the number of achievements both the user and their friend have achieved.
 
-![steam-lens-homepage](https://github.com/user-attachments/assets/9e4cd143-cb8a-4754-9485-256e3edd1a5d)
-
-![steam-lens-games-page](https://github.com/user-attachments/assets/b1f7437c-7f90-4833-bc3c-133ea8c99091)
-
-![steam-lens-create-account](https://github.com/user-attachments/assets/bcd2d81b-d230-4e18-8229-a8ea144567fb)
-
+![steam-lens-demo](https://github.com/user-attachments/assets/3f6d970a-cbe0-48fd-a8e8-43c79079664e)
 
 ## Project Layout
 
