@@ -4,7 +4,7 @@
 
 ## What is Steam Lens?
 
-Steam Lens is a website gives you the ability to compare a user's Steam library and achievements against their friends.
+Steam Lens is a website that gives you the ability to compare a user's Steam library and achievements against their friends.
 
 The user's friends are ranked starting from rank 1 at the top, I have the ranking currently weighted slightly more towards the *number* of common games a friend has over their percentage of common games.
 
