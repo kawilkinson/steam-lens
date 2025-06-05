@@ -1,6 +1,6 @@
-[![ci](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml/badge.svg)](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml)
-
 # Steam Lens
+
+[![ci](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml/badge.svg)](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml)
 
 ## What is Steam Lens?
 
