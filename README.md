@@ -72,3 +72,206 @@ On top of seeing comparisons, you can also click on any game in any of the lists
 
 ## Contributing
 Contribute by forking the repository and opening a pull request to the `main` branch. If you have any ideas for this project whether it'd be new features, optimizations, etc. feel free to share them. I'm always open to new ideas and improvements.
+
+## REST API Endpoints
+### Users Endpoints
+
+**UserCreate**
+
+Creates a user profile
+
+Endpoint: POST /v1/users/create
+
+*Path Parameters*
+```json
+{
+    "username": "user1@domain.com",
+    "steam_id": "76561197997096401",
+    "password": "Password123"
+}
+```
+
+*Response*
+```json
+{
+    "users": {
+        "id": "6e32eed8-c431-4aec-b028-5bcbe1fbe79c",
+        "created_at": "2025-03-14 23:15:42.123456789 +0000 UTC",
+        "updated_at": "2025-03-14 23:15:42.123456789 +0000 UTC",
+        "username": "user1@domain.com",
+        "steam_id": "76561197997096401"
+    }
+}
+```
+
+**Login**
+
+Logs user in
+
+Endpoint: POST /v1/users/login
+
+*Path Parameters*
+```json
+{
+    "username": "user1@domain.com",
+    "password": "Password123"
+}
+```
+*Response*
+```json
+{
+    "user": {
+        "id": "6e32eed8-c431-4aec-b028-5bcbe1fbe79c",
+        "created_at": "2025-03-14 23:15:42.123456789 +0000 UTC",
+        "updated_at": "2025-03-14 23:15:42.123456789 +0000 UTC",
+        "username": "user1@domain.com",
+        "steam_id": "76561197997096401"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikp",
+    "refresh_token": "eyJzdh1D5kfiO2Dwslt3ODkwIiwibmFt"
+}
+```
+
+**Logout**
+
+Logs user out if they're already logged in, uses refresh token in cookie to ensure it matches up
+
+Endpoint: POST /v1/users/logout
+
+*Response*
+```json
+{
+    "user": {
+        "id": "6e32eed8-c431-4aec-b028-5bcbe1fbe79c",
+        "username": "user1@domain.com",
+        "steam_id": "76561197997096401"
+    }
+}
+```
+
+**GetMe**
+
+Gets info about user
+
+Endpoint: GET /v1/users/me
+
+*Path Parameters*
+```json
+{
+    "id": "6e32eed8-c431-4aec-b028-5bcbe1fbe79c"
+}
+```
+
+*Response*
+```json
+{
+    "id": "6e32eed8-c431-4aec-b028-5bcbe1fbe79c",
+    "username": "user1@domain.com",
+    "steam_id": "76561197997096401"
+}
+```
+
+**UpdateUser**
+
+Updates user profile with choice of new username, password, and/or Steam ID
+
+Endpoint: PATCH /v1/users/me
+
+*Path Parameters*
+```json
+{
+    "username": "user2@domain.com",
+    "password": "NewPassword!",
+    "steam_id": "76561197997096419"
+}
+```
+*Response*
+```json
+{
+    "user": {
+        "username": "user2@domain.com",
+        "steam_id": "76561197997096419"
+    }
+}
+```
+
+### Steam Endpoints
+[Here](https://developer.valvesoftware.com/wiki/Steam_Web_API#GetGlobalAchievementPercentagesForApp_.28v0001.29) is where you can view the parameters needed to make api calls to Steam manually.
+
+**GetPlayerSummaries**
+
+Gets basic profile information from a Steam ID
+
+Endpoint: /api/steam/player-summaries
+
+*Response*
+```json
+{
+    "steamID": "76561197997096401",
+    "communityVisibilityState": 3,
+    "personaName": "user",
+    "avatar": "https://avatars.steamstatic.com/example.jpg",
+    "avatarMedium": "https://avatars.steamstatic.com/example_medium.jpg",
+    "avatarFull": "https://avatars.steamstatic.com/example_full.jpg"
+}
+```
+
+**GetOwnedGames**
+
+Get all owned games for player from Steam ID
+
+Endpoint: /api/steam/games
+
+*Response*
+```json
+{
+    "game_count": 25,
+    "games": [
+        {
+        "appID": 379720,
+        "name": "DOOM",
+        "img_icon_url": "https://cdn.fastly.steamstatic.com/steamcommunity/public/images/apps/379720/b6e72ff47d1990cb644700751eeeff14e0aba6dc.jpg"
+        }
+    ]
+}
+```
+
+**GetFriendList**
+
+Get all friends of user from their Steam ID
+
+Endpoint: /api/steam/friends
+
+*Response*
+```json
+{
+    "friends": [
+        {
+            "steamID": "76561197997096401",
+            "communityVisibilityState": 3,
+            "personaName": "user",
+            "avatar": "https://avatars.steamstatic.com/example.jpg",
+            "avatarMedium": "https://avatars.steamstatic.com/example_medium.jpg",
+            "avatarFull": "https://avatars.steamstatic.com/example_full.jpg"
+        }
+    ]
+}
+```
+
+**GetPlayerAchievements**
+
+Get all achievements of a user from their Steam ID
+
+Endpoint: /api/steam/compare-achievements
+
+*Response*
+```json
+{
+    "achievements": [
+        {
+            "apiName": "jumped_500_times",
+            "achieved": true
+        }
+    ] 
+}
+```

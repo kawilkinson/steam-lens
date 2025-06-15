@@ -255,16 +255,26 @@ func deref(ptr *string) string {
 }
 
 func (cfg *config) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
+	type response struct {
+		User `json:"user"`
+	}
+
 	userID, exists := req.Context().Value(userIDContextKey).(uuid.UUID)
 	if !exists || userID == uuid.Nil {
 		api.RespondWithError(w, http.StatusUnauthorized, "You are not authorized to update this account", nil)
 		return
 	}
 
+	user, err := cfg.db.GetUserByID(req.Context(), userID)
+	if err != nil {
+		api.RespondWithError(w, http.StatusNotFound, "Could not find user by that ID", err)
+		return
+	}
+
 	decoder := json.NewDecoder(req.Body)
 
 	params := updateUserParams{}
-	err := decoder.Decode(&params)
+	err = decoder.Decode(&params)
 	if err != nil {
 		api.RespondWithError(w, http.StatusInternalServerError, "Unable to decode request body", err)
 		return
@@ -303,11 +313,10 @@ func (cfg *config) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write([]byte(`{"message":"updated"}`))
-	if err != nil {
-		api.RespondWithError(w, http.StatusInternalServerError, "Failed to write reply", err)
-		return
-	}
+	api.RespondWithJSON(w, http.StatusOK, response{
+		User: User{
+			Username: user.Username,
+			SteamID:  user.SteamID,
+		},
+	})
 }
