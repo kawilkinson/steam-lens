@@ -1,22 +1,26 @@
-[![ci](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml/badge.svg)](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml)
-
 # Steam Lens
+
+[![ci](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml/badge.svg)](https://github.com/Khazz0r/steam-lens/actions/workflows/ci.yaml)
 
 ## What is Steam Lens?
 
-Steam Lens is a website that gives you the ability to compare a user's Steam library and achievements against their friends.
+Steam Lens is a website that gives you the ability to compare a user's Steam library and achievements against their friends at a moment's notice!
 
 The user's friends are ranked starting from rank 1 at the top, I have the ranking currently weighted slightly more towards the *number* of common games a friend has over their percentage of common games.
 
-Generally, as long as a user or friend doesn't have their profile privated, you should be able to see all of the matching games of a user and their friend, the missing games, and a comparison of the number of achievements for each game that have been achieved.
+Generally, as long as a user or friend doesn't have their profile privated, you should be able to see all of the matching games, the missing games, and the number of achievements both the user and their friend have achieved.
 
+![steam-lens-demo](https://github.com/user-attachments/assets/3f6d970a-cbe0-48fd-a8e8-43c79079664e)
 
+## Motivation
+
+Steam Lens provides a very quick way to run comparisons of Steam libraries, usually this is a more manual process through Steam but this website makes it quick and easy to have all of those comparisons with just a simple input of your own Steam ID or another user's! I wanted to practice CI/CD through a full stack website (you'll find the cd.yaml is commented out due to AWS no longer hosting this website), understand frontend development better through a framework, further master my backend development skills through security and RESTful API building, and also sharpen my database skills working with a PostgreSQL database. So I decided to build Steam-Lens to do this.
 
 ## Project Layout
 
 Currently the project can be broken up into 3 parts; it has a frontend, a backend, and a PostgreSQL database. The backend is in the root of the project, the frontend is in the frontend directory, and the database schema is located in the sql/schema directory.
 
-## Installation / Setup
+## Installation / Quick Start
 
 1. After cloning the repository, the easiest way to get the entire website running is to download and install Docker Desktop from their official website [here](https://www.docker.com/products/docker-desktop/). This way you don't have to worry about downloading or installing anything extra, Docker containers will handle all the dependencies and requirements with a clean environment to ensure stability.
 
