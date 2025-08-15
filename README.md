@@ -134,7 +134,7 @@ Endpoint: POST /v1/users/login
 
 **Logout**
 
-Logs user out if they're already logged in, uses refresh token in cookie to ensure it matches up
+Logs user out if they're already logged in, uses refresh token in cookie to ensure it matches up.
 
 Endpoint: POST /v1/users/logout
 
