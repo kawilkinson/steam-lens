@@ -20,7 +20,7 @@ Steam Lens provides a very quick way to run comparisons of Steam libraries, usua
 
 Currently the project can be broken up into 3 parts; it has a frontend, a backend, and a PostgreSQL database. The backend is in the root of the project, the frontend is in the frontend directory, and the database schema is located in the sql/schema directory.
 
-## 🚀 Installation / Quick Start
+## 🚀 Installation & Quick Start
 
 1. After cloning the repository, the easiest way to get the entire website running is to download and install Docker Desktop from their official website [here](https://www.docker.com/products/docker-desktop/). This way you don't have to worry about downloading or installing anything extra, Docker containers will handle all the dependencies and requirements with a clean environment to ensure stability.
 
